@@ -3,6 +3,7 @@ import { getSessionCookieOptions } from "./_core/cookies";
 import { systemRouter } from "./_core/systemRouter";
 import { publicProcedure, router, protectedProcedure } from "./_core/trpc";
 import { z } from "zod";
+import { notifyCoordinatorNewScheduling, notifyDiaristaNewScheduling, notifyPaymentMade } from "./whatsapp";
 import {
   createDiarista,
   getDiaristasForUser,
@@ -175,7 +176,7 @@ export const appRouter = router({
         observacoes: z.string().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
-        return createAgendamento({
+        const agendamento = await createAgendamento({
           userId: ctx.user.id,
           diaristaId: input.diaristaId,
           especialidadeId: input.especialidadeId,
@@ -191,6 +192,14 @@ export const appRouter = router({
           valorServico: input.valorServico,
           observacoes: input.observacoes,
         });
+        const diarista = await getDiaristaById(input.diaristaId);
+        if (diarista) {
+          const serviceDate = new Date(input.dataServico).toLocaleDateString('pt-BR');
+          const serviceTime = input.horaInicio && input.horaFim ? `${input.horaInicio} - ${input.horaFim}` : 'A definir';
+          await notifyCoordinatorNewScheduling(diarista.nome, input.nomeCliente, serviceDate, serviceTime, input.enderecoServico);
+          await notifyDiaristaNewScheduling(diarista.telefone, input.nomeCliente, serviceDate, serviceTime, input.enderecoServico, input.descricaoServico);
+        }
+        return agendamento;
       }),
 
     list: protectedProcedure

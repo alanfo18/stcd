@@ -7,4 +7,7 @@ export const ENV = {
   isProduction: process.env.NODE_ENV === "production",
   forgeApiUrl: process.env.BUILT_IN_FORGE_API_URL ?? "",
   forgeApiKey: process.env.BUILT_IN_FORGE_API_KEY ?? "",
+  ultramsgApiUrl: process.env.ULTRAMSG_API_URL ?? "",
+  ultramsgInstanceId: process.env.ULTRAMSG_INSTANCE_ID ?? "",
+  ultramsgApiToken: process.env.ULTRAMSG_API_TOKEN ?? "",
 };

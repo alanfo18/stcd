@@ -11,6 +11,7 @@ import { useLocation } from "wouter";
 export default function Diaristas() {
   const [, setLocation] = useLocation();
   const [isOpen, setIsOpen] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
   const [formData, setFormData] = useState({
     nome: "",
     telefone: "",
@@ -30,15 +31,29 @@ export default function Diaristas() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await createMutation.mutateAsync({
-        nome: formData.nome,
-        telefone: formData.telefone,
-        email: formData.email || undefined,
-        endereco: formData.endereco || undefined,
-        cidade: formData.cidade || undefined,
-        cep: formData.cep || undefined,
-        valorDiaria: parseInt(formData.valorDiaria) || 0,
-      });
+      const valor = Math.round(parseFloat(formData.valorDiaria) * 100) || 0;
+      if (editingId) {
+        await updateMutation.mutateAsync({
+          id: editingId,
+          nome: formData.nome,
+          telefone: formData.telefone,
+          email: formData.email || undefined,
+          endereco: formData.endereco || undefined,
+          cidade: formData.cidade || undefined,
+          cep: formData.cep || undefined,
+          valorDiaria: valor,
+        });
+      } else {
+        await createMutation.mutateAsync({
+          nome: formData.nome,
+          telefone: formData.telefone,
+          email: formData.email || undefined,
+          endereco: formData.endereco || undefined,
+          cidade: formData.cidade || undefined,
+          cep: formData.cep || undefined,
+          valorDiaria: valor,
+        });
+      }
       setFormData({
         nome: "",
         telefone: "",
@@ -48,11 +63,26 @@ export default function Diaristas() {
         cep: "",
         valorDiaria: "",
       });
+      setEditingId(null);
       setIsOpen(false);
       refetch();
     } catch (error) {
-      console.error("Erro ao criar diarista:", error);
+      console.error("Erro ao salvar diarista:", error);
     }
+  };
+
+  const handleEdit = (diarista: any) => {
+    setEditingId(diarista.id);
+    setFormData({
+      nome: diarista.nome,
+      telefone: diarista.telefone,
+      email: diarista.email || "",
+      endereco: diarista.endereco || "",
+      cidade: diarista.cidade || "",
+      cep: diarista.cep || "",
+      valorDiaria: (diarista.valorDiaria / 100).toString(),
+    });
+    setIsOpen(true);
   };
 
   const handleDelete = async (id: number) => {
@@ -95,9 +125,9 @@ export default function Diaristas() {
             </DialogTrigger>
             <DialogContent>
               <DialogHeader>
-                <DialogTitle>Adicionar Nova Diarista</DialogTitle>
+                <DialogTitle>{editingId ? "Editar Diarista" : "Adicionar Nova Diarista"}</DialogTitle>
                 <DialogDescription>
-                  Preencha os dados da diarista para cadastrá-la no sistema.
+                  {editingId ? "Atualize os dados da diarista." : "Preencha os dados da diarista para cadastrá-la no sistema."}
                 </DialogDescription>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -174,7 +204,7 @@ export default function Diaristas() {
                 </div>
                 <div className="flex gap-2 pt-4">
                   <Button type="submit" className="flex-1 bg-blue-600 hover:bg-blue-700">
-                    Adicionar
+                    {editingId ? "Atualizar" : "Adicionar"}
                   </Button>
                   <Button type="button" variant="outline" className="flex-1" onClick={() => setIsOpen(false)}>
                     Cancelar
@@ -237,9 +267,9 @@ export default function Diaristas() {
                       size="sm" 
                       variant="outline" 
                       className="flex-1"
-                      onClick={() => setLocation(`/diaristas/${diarista.id}`)}
+                      onClick={() => handleEdit(diarista)}
                     >
-                      Ver Detalhes
+                      ✏️ Editar
                     </Button>
                     <Button 
                       size="sm" 
@@ -247,7 +277,7 @@ export default function Diaristas() {
                       className="flex-1"
                       onClick={() => handleDelete(diarista.id)}
                     >
-                      Deletar
+                      🗑️ Deletar
                     </Button>
                   </div>
                 </CardContent>
