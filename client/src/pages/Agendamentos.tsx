@@ -9,9 +9,20 @@ import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
 
+const ENDERECOS = [
+  "Havalon",
+  "Cantina Havalon",
+  "Pegasus",
+  "Cantina Pegasus",
+  "Aeroporto",
+  "Quiosque",
+  "Ima",
+];
+
 export default function Agendamentos() {
   const [, setLocation] = useLocation();
   const [isOpen, setIsOpen] = useState(false);
+  const [editingId, setEditingId] = useState<number | null>(null);
   const [formData, setFormData] = useState({
     diaristaId: "",
     especialidadeId: "",
@@ -35,24 +46,63 @@ export default function Agendamentos() {
   const updateMutation = trpc.agendamento.update.useMutation();
   const deleteMutation = trpc.agendamento.delete.useMutation();
 
+  const handleEdit = (agendamento: any) => {
+    setEditingId(agendamento.id);
+    setFormData({
+      diaristaId: agendamento.diaristaId.toString(),
+      especialidadeId: agendamento.especialidadeId.toString(),
+      nomeCliente: agendamento.nomeCliente,
+      telefoneCliente: agendamento.telefoneCliente || "",
+      enderecoServico: agendamento.enderecoServico,
+      dataServico: new Date(agendamento.dataServico).toISOString().split('T')[0],
+      horaInicio: agendamento.horaInicio || "",
+      horaFim: agendamento.horaFim || "",
+      horaDescansoInicio: agendamento.horaDescansoInicio || "",
+      horaDescansoFim: agendamento.horaDescansoFim || "",
+      descricaoServico: agendamento.descricaoServico || "",
+      valorServico: agendamento.valorServico ? (agendamento.valorServico / 100).toString() : "",
+      observacoes: agendamento.observacoes || "",
+    });
+    setIsOpen(true);
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      await createMutation.mutateAsync({
-        diaristaId: parseInt(formData.diaristaId),
-        especialidadeId: parseInt(formData.especialidadeId),
-        nomeCliente: formData.nomeCliente,
-        telefoneCliente: formData.telefoneCliente || undefined,
-        enderecoServico: formData.enderecoServico,
-        dataServico: new Date(formData.dataServico),
-        horaInicio: formData.horaInicio || undefined,
-        horaFim: formData.horaFim || undefined,
-        horaDescansoInicio: formData.horaDescansoInicio || undefined,
-        horaDescansoFim: formData.horaDescansoFim || undefined,
-        descricaoServico: formData.descricaoServico || undefined,
-        valorServico: formData.valorServico ? parseInt(formData.valorServico) * 100 : undefined,
-        observacoes: formData.observacoes || undefined,
-      });
+      if (editingId) {
+        const updateData = {
+          diaristaId: parseInt(formData.diaristaId),
+          especialidadeId: parseInt(formData.especialidadeId),
+          nomeCliente: formData.nomeCliente,
+          telefoneCliente: formData.telefoneCliente || undefined,
+          enderecoServico: formData.enderecoServico,
+          dataServico: new Date(formData.dataServico),
+          horaInicio: formData.horaInicio || undefined,
+          horaFim: formData.horaFim || undefined,
+          horaDescansoInicio: formData.horaDescansoInicio || undefined,
+          horaDescansoFim: formData.horaDescansoFim || undefined,
+          descricaoServico: formData.descricaoServico || undefined,
+          valorServico: formData.valorServico ? parseInt(formData.valorServico) * 100 : undefined,
+          observacoes: formData.observacoes || undefined,
+        };
+        await updateMutation.mutateAsync({ id: editingId, ...updateData });
+      } else {
+        await createMutation.mutateAsync({
+          diaristaId: parseInt(formData.diaristaId),
+          especialidadeId: parseInt(formData.especialidadeId),
+          nomeCliente: formData.nomeCliente,
+          telefoneCliente: formData.telefoneCliente || undefined,
+          enderecoServico: formData.enderecoServico,
+          dataServico: new Date(formData.dataServico),
+          horaInicio: formData.horaInicio || undefined,
+          horaFim: formData.horaFim || undefined,
+          horaDescansoInicio: formData.horaDescansoInicio || undefined,
+          horaDescansoFim: formData.horaDescansoFim || undefined,
+          descricaoServico: formData.descricaoServico || undefined,
+          valorServico: formData.valorServico ? parseInt(formData.valorServico) * 100 : undefined,
+          observacoes: formData.observacoes || undefined,
+        });
+      }
       setFormData({
         diaristaId: "",
         especialidadeId: "",
@@ -68,10 +118,11 @@ export default function Agendamentos() {
         valorServico: "",
         observacoes: "",
       });
+      setEditingId(null);
       setIsOpen(false);
       refetch();
     } catch (error) {
-      console.error("Erro ao criar agendamento:", error);
+      console.error("Erro ao salvar agendamento:", error);
     }
   };
 
@@ -125,9 +176,9 @@ export default function Agendamentos() {
             </DialogTrigger>
             <DialogContent className="max-h-[90vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle>Novo Agendamento</DialogTitle>
+                <DialogTitle>{editingId ? "Editar Agendamento" : "Agendar Novo Serviço"}</DialogTitle>
                 <DialogDescription>
-                  Preencha os dados do agendamento de serviço.
+                  {editingId ? "Atualize os dados do agendamento." : "Preencha os dados do agendamento para criar um novo serviço."}
                 </DialogDescription>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -184,16 +235,21 @@ export default function Agendamentos() {
                   />
                 </div>
 
-                <div>
-                  <Label htmlFor="enderecoServico">Endereço do Serviço *</Label>
-                  <Input
-                    id="enderecoServico"
-                    value={formData.enderecoServico}
-                    onChange={(e) => setFormData({ ...formData, enderecoServico: e.target.value })}
-                    placeholder="Rua, número"
-                    required
-                  />
-                </div>
+                  <div>
+                    <Label htmlFor="enderecoServico">Local do Serviço *</Label>
+                    <Select value={formData.enderecoServico} onValueChange={(value) => setFormData({ ...formData, enderecoServico: value })}>
+                      <SelectTrigger id="enderecoServico">
+                        <SelectValue placeholder="Selecione o local" />
+                      </SelectTrigger>
+                      <SelectContent>
+                        {ENDERECOS.map((local) => (
+                          <SelectItem key={local} value={local}>
+                            {local}
+                          </SelectItem>
+                        ))}
+                      </SelectContent>
+                    </Select>
+                  </div>
 
                 <div>
                   <Label htmlFor="dataServico">Data do Serviço *</Label>
@@ -284,7 +340,7 @@ export default function Agendamentos() {
 
                 <div className="flex gap-2 pt-4">
                   <Button type="submit" className="flex-1 bg-green-600 hover:bg-green-700">
-                    Agendar
+                    {editingId ? "Atualizar" : "Agendar"}
                   </Button>
                   <Button type="button" variant="outline" className="flex-1" onClick={() => setIsOpen(false)}>
                     Cancelar
@@ -354,8 +410,13 @@ export default function Agendamentos() {
                     </div>
                   )}
                   <div className="flex gap-2 pt-3">
-                    <Button size="sm" variant="outline" className="flex-1">
-                      Editar
+                    <Button 
+                      size="sm" 
+                      variant="outline" 
+                      className="flex-1"
+                      onClick={() => handleEdit(agendamento)}
+                    >
+                      ✏️ Editar
                     </Button>
                     <Button 
                       size="sm" 
@@ -363,7 +424,7 @@ export default function Agendamentos() {
                       className="flex-1"
                       onClick={() => handleDelete(agendamento.id)}
                     >
-                      Cancelar
+                      🗑️ Cancelar
                     </Button>
                   </div>
                 </CardContent>

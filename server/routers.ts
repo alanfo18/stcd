@@ -262,7 +262,7 @@ export const appRouter = router({
         comprovante: z.string().optional(),
       }))
       .mutation(async ({ ctx, input }) => {
-        return createPagamento({
+        const pagamento = await createPagamento({
           userId: ctx.user.id,
           diaristaId: input.diaristaId,
           agendamentoId: input.agendamentoId,
@@ -273,6 +273,14 @@ export const appRouter = router({
           descricao: input.descricao,
           comprovante: input.comprovante,
         });
+        const diarista = await getDiaristaById(input.diaristaId);
+        if (diarista && (input.status === "pago" || input.status === undefined)) {
+          const valorFormatado = (input.valor / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+          const dataFormatada = new Date(input.dataPagamento).toLocaleDateString('pt-BR');
+          const metodoLabel = { dinheiro: 'Dinheiro', pix: 'PIX', transferencia: 'Transferencia', cartao: 'Cartao' }[input.metodo];
+          await notifyPaymentMade(diarista.nome, diarista.telefone, valorFormatado, metodoLabel, dataFormatada);
+        }
+        return pagamento;
       }),
 
     list: protectedProcedure
