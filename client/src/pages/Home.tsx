@@ -100,7 +100,17 @@ export default function Home() {
           </div>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4 mb-8">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 mb-8">
+          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setLocation("/dashboard")}>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg">📊 Dashboard</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-2xl font-bold text-indigo-600">Monitorar</p>
+              <p className="text-sm text-gray-600 mt-1">Visão geral do sistema</p>
+            </CardContent>
+          </Card>
+
           <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setLocation("/diaristas")}>
             <CardHeader className="pb-3">
               <CardTitle className="text-lg">👥 Diaristas</CardTitle>
@@ -138,6 +148,16 @@ export default function Home() {
             <CardContent>
               <p className="text-2xl font-bold text-orange-600">Visualizar</p>
               <p className="text-sm text-gray-600 mt-1">Veja relatórios e estatísticas</p>
+            </CardContent>
+          </Card>
+
+          <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setLocation("/recibos")}>
+            <CardHeader className="pb-3">
+              <CardTitle className="text-lg">📋 Recibos</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <p className="text-2xl font-bold text-red-600">Emitir</p>
+              <p className="text-sm text-gray-600 mt-1">Gere recibos de pagamento</p>
             </CardContent>
           </Card>
         </div>
