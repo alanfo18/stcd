@@ -21,6 +21,8 @@ export default function Agendamentos() {
     dataServico: "",
     horaInicio: "",
     horaFim: "",
+    horaDescansoInicio: "",
+    horaDescansoFim: "",
     descricaoServico: "",
     valorServico: "",
     observacoes: "",
@@ -45,6 +47,8 @@ export default function Agendamentos() {
         dataServico: new Date(formData.dataServico),
         horaInicio: formData.horaInicio || undefined,
         horaFim: formData.horaFim || undefined,
+        horaDescansoInicio: formData.horaDescansoInicio || undefined,
+        horaDescansoFim: formData.horaDescansoFim || undefined,
         descricaoServico: formData.descricaoServico || undefined,
         valorServico: formData.valorServico ? parseInt(formData.valorServico) * 100 : undefined,
         observacoes: formData.observacoes || undefined,
@@ -58,6 +62,8 @@ export default function Agendamentos() {
         dataServico: "",
         horaInicio: "",
         horaFim: "",
+        horaDescansoInicio: "",
+        horaDescansoFim: "",
         descricaoServico: "",
         valorServico: "",
         observacoes: "",
@@ -202,21 +208,44 @@ export default function Agendamentos() {
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="horaInicio">Hora de Início</Label>
+                    <Label htmlFor="horaInicio">Hora de Início *</Label>
                     <Input
                       id="horaInicio"
                       type="time"
                       value={formData.horaInicio}
                       onChange={(e) => setFormData({ ...formData, horaInicio: e.target.value })}
+                      required
                     />
                   </div>
                   <div>
-                    <Label htmlFor="horaFim">Hora de Fim</Label>
+                    <Label htmlFor="horaFim">Hora de Fim *</Label>
                     <Input
                       id="horaFim"
                       type="time"
                       value={formData.horaFim}
                       onChange={(e) => setFormData({ ...formData, horaFim: e.target.value })}
+                      required
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-2 gap-4">
+                  <div>
+                    <Label htmlFor="horaDescansoInicio">Hora Descanso (Início)</Label>
+                    <Input
+                      id="horaDescansoInicio"
+                      type="time"
+                      value={formData.horaDescansoInicio || ""}
+                      onChange={(e) => setFormData({ ...formData, horaDescansoInicio: e.target.value })}
+                    />
+                  </div>
+                  <div>
+                    <Label htmlFor="horaDescansoFim">Hora Descanso (Fim)</Label>
+                    <Input
+                      id="horaDescansoFim"
+                      type="time"
+                      value={formData.horaDescansoFim || ""}
+                      onChange={(e) => setFormData({ ...formData, horaDescansoFim: e.target.value })}
                     />
                   </div>
                 </div>

@@ -91,6 +91,8 @@ export const agendamentos = mysqlTable("agendamentos", {
   dataServico: timestamp("dataServico").notNull(),
   horaInicio: varchar("horaInicio", { length: 5 }), // Formato HH:MM
   horaFim: varchar("horaFim", { length: 5 }), // Formato HH:MM
+  horaDescansoInicio: varchar("horaDescansoInicio", { length: 5 }), // Formato HH:MM
+  horaDescansoFim: varchar("horaDescansoFim", { length: 5 }), // Formato HH:MM
   descricaoServico: text("descricaoServico"),
   status: mysqlEnum("status", ["agendado", "concluido", "cancelado"]).default("agendado").notNull(),
   valorServico: int("valorServico"), // Valor em centavos, se diferente da diária padrão
@@ -141,4 +143,59 @@ export const avaliacoes = mysqlTable("avaliacoes", {
 
 export type Avaliacao = typeof avaliacoes.$inferSelect;
 export type InsertAvaliacao = typeof avaliacoes.$inferInsert;
+
+/**
+ * Tabela de Comprovantes
+ * Armazena URLs de comprovantes de pagamento (imagens e PDFs)
+ */
+export const comprovantes = mysqlTable("comprovantes", {
+  id: int("id").autoincrement().primaryKey(),
+  pagamentoId: int("pagamentoId").notNull(),
+  url: varchar("url", { length: 500 }).notNull(),
+  tipoArquivo: varchar("tipoArquivo", { length: 50 }).notNull(), // image/png, application/pdf, etc
+  nomeArquivo: varchar("nomeArquivo", { length: 255 }).notNull(),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type Comprovante = typeof comprovantes.$inferSelect;
+export type InsertComprovante = typeof comprovantes.$inferInsert;
+
+/**
+ * Tabela de Recibos
+ * Armazena recibos assinados para diaristas
+ */
+export const recibos = mysqlTable("recibos", {
+  id: int("id").autoincrement().primaryKey(),
+  agendamentoId: int("agendamentoId").notNull(),
+  pagamentoId: int("pagamentoId").notNull(),
+  diaristaId: int("diaristaId").notNull(),
+  urlPdf: varchar("urlPdf", { length: 500 }).notNull(),
+  assinado: boolean("assinado").default(false).notNull(),
+  dataAssinatura: timestamp("dataAssinatura"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+  updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
+});
+
+export type Recibo = typeof recibos.$inferSelect;
+export type InsertRecibo = typeof recibos.$inferInsert;
+
+/**
+ * Tabela de Notificações WhatsApp
+ * Registra notificações enviadas via WhatsApp
+ */
+export const notificacoesWhatsapp = mysqlTable("notificacoes_whatsapp", {
+  id: int("id").autoincrement().primaryKey(),
+  agendamentoId: int("agendamentoId"),
+  pagamentoId: int("pagamentoId"),
+  diaristaId: int("diaristaId"),
+  telefone: varchar("telefone", { length: 20 }).notNull(),
+  tipo: mysqlEnum("tipo", ["agendamento", "pagamento", "recibo", "aviso"]).notNull(),
+  mensagem: text("mensagem").notNull(),
+  status: mysqlEnum("status", ["pendente", "enviado", "falha"]).default("pendente").notNull(),
+  dataEnvio: timestamp("dataEnvio"),
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type NotificacaoWhatsapp = typeof notificacoesWhatsapp.$inferSelect;
+export type InsertNotificacaoWhatsapp = typeof notificacoesWhatsapp.$inferInsert;
 

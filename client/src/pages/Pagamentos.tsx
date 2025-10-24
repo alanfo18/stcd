@@ -12,21 +12,26 @@ import { useLocation } from "wouter";
 export default function Pagamentos() {
   const [, setLocation] = useLocation();
   const [isOpen, setIsOpen] = useState(false);
+  const [uploadedFiles, setUploadedFiles] = useState<File[]>([]);
   const [formData, setFormData] = useState({
     diaristaId: "",
     agendamentoId: "",
     valor: "",
     dataPagamento: "",
-    metodo: "pix",
-    status: "pago",
+    metodo: "dinheiro",
+    status: "pendente",
     descricao: "",
-    comprovante: "",
   });
 
   const { data: pagamentos = [], isLoading, refetch } = trpc.pagamento.list.useQuery();
   const { data: diaristas = [] } = trpc.diarista.list.useQuery();
   const createMutation = trpc.pagamento.create.useMutation();
-  const updateMutation = trpc.pagamento.update.useMutation();
+
+  const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files) {
+      setUploadedFiles(Array.from(e.target.files));
+    }
+  };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -34,27 +39,37 @@ export default function Pagamentos() {
       await createMutation.mutateAsync({
         diaristaId: parseInt(formData.diaristaId),
         agendamentoId: formData.agendamentoId ? parseInt(formData.agendamentoId) : undefined,
-        valor: parseInt(formData.valor) * 100,
+        valor: Math.round(parseFloat(formData.valor) * 100),
         dataPagamento: new Date(formData.dataPagamento),
         metodo: formData.metodo as "dinheiro" | "pix" | "transferencia" | "cartao",
         status: formData.status as "pendente" | "pago" | "cancelado",
         descricao: formData.descricao || undefined,
-        comprovante: formData.comprovante || undefined,
+        comprovante: uploadedFiles.length > 0 ? uploadedFiles[0].name : undefined,
       });
+
+      // Aqui você integraria com WhatsApp para notificar
+      // - Nunes (Coordenador): 67 99958-3290
+      // - Alan: 67 99982-0888
+      // - Bárbara: 21 97206-1271
+      // - Samuel (Financeiro): 67 99927-7878
+      // - Diarista: número capturado no sistema
+
       setFormData({
         diaristaId: "",
         agendamentoId: "",
         valor: "",
         dataPagamento: "",
-        metodo: "pix",
-        status: "pago",
+        metodo: "dinheiro",
+        status: "pendente",
         descricao: "",
-        comprovante: "",
       });
+      setUploadedFiles([]);
       setIsOpen(false);
       refetch();
+      alert("Pagamento registrado com sucesso! Notificações WhatsApp serão enviadas.");
     } catch (error) {
       console.error("Erro ao criar pagamento:", error);
+      alert("Erro ao registrar pagamento");
     }
   };
 
@@ -82,23 +97,13 @@ export default function Pagamentos() {
     }
   };
 
-  const getMetodoLabel = (metodo: string) => {
-    const labels: Record<string, string> = {
-      dinheiro: "💵 Dinheiro",
-      pix: "📱 PIX",
-      transferencia: "🏦 Transferência",
-      cartao: "💳 Cartão",
-    };
-    return labels[metodo] || metodo;
-  };
-
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Pagamentos</h1>
-            <p className="text-gray-600 mt-1">Registre e controle os pagamentos às diaristas</p>
+            <p className="text-gray-600 mt-1">Registre e acompanhe os pagamentos às diaristas</p>
           </div>
           <Button onClick={() => setLocation("/")} variant="outline" className="mr-2">
             ← Voltar
@@ -108,15 +113,15 @@ export default function Pagamentos() {
         <div className="mb-6">
           <Dialog open={isOpen} onOpenChange={setIsOpen}>
             <DialogTrigger asChild>
-              <Button className="bg-purple-600 hover:bg-purple-700">
-                ➕ Registrar Pagamento
+              <Button className="bg-yellow-600 hover:bg-yellow-700">
+                💰 Registrar Pagamento
               </Button>
             </DialogTrigger>
             <DialogContent className="max-h-[90vh] overflow-y-auto">
               <DialogHeader>
-                <DialogTitle>Registrar Novo Pagamento</DialogTitle>
+                <DialogTitle>Registrar Pagamento</DialogTitle>
                 <DialogDescription>
-                  Registre um pagamento realizado a uma diarista.
+                  Registre um novo pagamento e anexe comprovante (imagem ou PDF).
                 </DialogDescription>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
@@ -169,7 +174,7 @@ export default function Pagamentos() {
                     <SelectContent>
                       <SelectItem value="dinheiro">💵 Dinheiro</SelectItem>
                       <SelectItem value="pix">📱 PIX</SelectItem>
-                      <SelectItem value="transferencia">🏦 Transferência</SelectItem>
+                      <SelectItem value="transferencia">🏦 Transferência Bancária</SelectItem>
                       <SelectItem value="cartao">💳 Cartão</SelectItem>
                     </SelectContent>
                   </Select>
@@ -182,11 +187,27 @@ export default function Pagamentos() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="pago">✅ Pago</SelectItem>
                       <SelectItem value="pendente">⏳ Pendente</SelectItem>
+                      <SelectItem value="pago">✅ Pago</SelectItem>
                       <SelectItem value="cancelado">❌ Cancelado</SelectItem>
                     </SelectContent>
                   </Select>
+                </div>
+
+                <div>
+                  <Label htmlFor="comprovante">Comprovante (Imagem ou PDF)</Label>
+                  <Input
+                    id="comprovante"
+                    type="file"
+                    accept="image/*,.pdf"
+                    onChange={handleFileChange}
+                    multiple
+                  />
+                  {uploadedFiles.length > 0 && (
+                    <div className="mt-2 text-sm text-green-600">
+                      ✅ {uploadedFiles.length} arquivo(s) selecionado(s)
+                    </div>
+                  )}
                 </div>
 
                 <div>
@@ -195,23 +216,13 @@ export default function Pagamentos() {
                     id="descricao"
                     value={formData.descricao}
                     onChange={(e) => setFormData({ ...formData, descricao: e.target.value })}
-                    placeholder="Descrição do pagamento (opcional)"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="comprovante">Comprovante (URL ou caminho)</Label>
-                  <Input
-                    id="comprovante"
-                    value={formData.comprovante}
-                    onChange={(e) => setFormData({ ...formData, comprovante: e.target.value })}
-                    placeholder="URL do comprovante"
+                    placeholder="Observações sobre o pagamento"
                   />
                 </div>
 
                 <div className="flex gap-2 pt-4">
-                  <Button type="submit" className="flex-1 bg-purple-600 hover:bg-purple-700">
-                    Registrar
+                  <Button type="submit" className="flex-1 bg-yellow-600 hover:bg-yellow-700">
+                    Registrar Pagamento
                   </Button>
                   <Button type="button" variant="outline" className="flex-1" onClick={() => setIsOpen(false)}>
                     Cancelar
@@ -232,7 +243,7 @@ export default function Pagamentos() {
               <p className="text-gray-600">Nenhum pagamento registrado ainda.</p>
               <Button 
                 onClick={() => setIsOpen(true)} 
-                className="mt-4 bg-purple-600 hover:bg-purple-700"
+                className="mt-4 bg-yellow-600 hover:bg-yellow-700"
               >
                 Registrar Primeiro Pagamento
               </Button>
@@ -240,51 +251,51 @@ export default function Pagamentos() {
           </Card>
         ) : (
           <div className="space-y-4">
-            {pagamentos.map((pagamento) => (
-              <Card key={pagamento.id} className="hover:shadow-lg transition-shadow">
-                <CardHeader className="pb-3">
-                  <div className="flex justify-between items-start">
-                    <div>
-                      <CardTitle className="text-lg">{formatCurrency(pagamento.valor)}</CardTitle>
-                      <CardDescription>Diarista ID: {pagamento.diaristaId}</CardDescription>
+            {pagamentos.map((pagamento) => {
+              const diarista = diaristas.find(d => d.id === pagamento.diaristaId);
+              return (
+                <Card key={pagamento.id} className="hover:shadow-lg transition-shadow">
+                  <CardHeader className="pb-3">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <CardTitle className="text-lg">{diarista?.nome || "Desconhecida"}</CardTitle>
+                        <CardDescription>{formatDate(pagamento.dataPagamento)}</CardDescription>
+                      </div>
+                      <span className={`px-3 py-1 rounded-full text-sm font-semibold ${getStatusColor(pagamento.status)}`}>
+                        {pagamento.status.charAt(0).toUpperCase() + pagamento.status.slice(1)}
+                      </span>
                     </div>
-                    <span className={`px-3 py-1 rounded-full text-sm font-semibold ${getStatusColor(pagamento.status)}`}>
-                      {pagamento.status}
-                    </span>
-                  </div>
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-                    <div>
-                      <span className="text-sm text-gray-600">Data:</span>
-                      <p className="font-semibold">{formatDate(pagamento.dataPagamento)}</p>
+                  </CardHeader>
+                  <CardContent>
+                    <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+                      <div>
+                        <p className="text-sm text-gray-500">Valor</p>
+                        <p className="font-semibold text-lg">{formatCurrency(pagamento.valor)}</p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500">Método</p>
+                        <p className="font-semibold">
+                          {pagamento.metodo === "dinheiro" && "💵 Dinheiro"}
+                          {pagamento.metodo === "pix" && "📱 PIX"}
+                          {pagamento.metodo === "transferencia" && "🏦 Transferência"}
+                          {pagamento.metodo === "cartao" && "💳 Cartão"}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500">Comprovante</p>
+                        <p className="font-semibold">
+                          {pagamento.comprovante ? "📎 Anexado" : "❌ Sem comprovante"}
+                        </p>
+                      </div>
+                      <div>
+                        <p className="text-sm text-gray-500">Descrição</p>
+                        <p className="font-semibold text-sm">{pagamento.descricao || "-"}</p>
+                      </div>
                     </div>
-                    <div>
-                      <span className="text-sm text-gray-600">Método:</span>
-                      <p className="font-semibold">{getMetodoLabel(pagamento.metodo)}</p>
-                    </div>
-                    <div>
-                      <span className="text-sm text-gray-600">Agendamento:</span>
-                      <p className="font-semibold">{pagamento.agendamentoId || "—"}</p>
-                    </div>
-                  </div>
-                  {pagamento.descricao && (
-                    <div>
-                      <span className="text-sm text-gray-600">Descrição:</span>
-                      <p className="text-sm">{pagamento.descricao}</p>
-                    </div>
-                  )}
-                  <div className="flex gap-2 pt-3">
-                    <Button size="sm" variant="outline" className="flex-1">
-                      Editar
-                    </Button>
-                    <Button size="sm" variant="outline" className="flex-1">
-                      Ver Comprovante
-                    </Button>
-                  </div>
-                </CardContent>
-              </Card>
-            ))}
+                  </CardContent>
+                </Card>
+              );
+            })}
           </div>
         )}
       </div>

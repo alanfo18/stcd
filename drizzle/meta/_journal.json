@@ -15,6 +15,13 @@
       "when": 1761270788854,
       "tag": "0001_chubby_wind_dancer",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "5",
+      "when": 1761272297879,
+      "tag": "0002_gorgeous_wiccan",
+      "breakpoints": true
     }
   ]
 }
