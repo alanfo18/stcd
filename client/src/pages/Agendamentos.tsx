@@ -30,6 +30,7 @@ export default function Agendamentos() {
     enderecoServico: "",
     dataInicio: "",
     dataFim: "",
+    valorDiaria: "",
     descricaoServico: "",
     observacoes: "",
   });
@@ -48,8 +49,9 @@ export default function Agendamentos() {
       especialidadeId: agendamento.especialidadeId.toString(),
       telefoneCliente: agendamento.telefoneCliente || "",
       enderecoServico: agendamento.enderecoServico,
-      dataInicio: new Date(agendamento.dataServico).toISOString().split('T')[0],
-      dataFim: new Date(agendamento.dataServico).toISOString().split('T')[0],
+      dataInicio: new Date(agendamento.dataInicio).toISOString().split('T')[0],
+      dataFim: new Date(agendamento.dataFim).toISOString().split('T')[0],
+      valorDiaria: (agendamento.valorDiaria / 100).toString(),
       descricaoServico: agendamento.descricaoServico || "",
       observacoes: agendamento.observacoes || "",
     });
@@ -57,14 +59,13 @@ export default function Agendamentos() {
   };
 
   const calcularValorDiaria = () => {
-    const diarista = diaristas.find(d => d.id === parseInt(formData.diaristaId));
-    if (!diarista || !formData.dataInicio || !formData.dataFim) return 0;
+    if (!formData.valorDiaria || !formData.dataInicio || !formData.dataFim) return 0;
 
     const inicio = new Date(formData.dataInicio);
     const fim = new Date(formData.dataFim);
     const diasTrabalhados = Math.ceil((fim.getTime() - inicio.getTime()) / (1000 * 60 * 60 * 24)) + 1;
     
-    return (diarista.valorDiaria / 100) * diasTrabalhados;
+    return (parseFloat(formData.valorDiaria) / 100) * diasTrabalhados;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -79,11 +80,9 @@ export default function Agendamentos() {
           nomeCliente: "Cliente",
           telefoneCliente: formData.telefoneCliente || undefined,
           enderecoServico: formData.enderecoServico,
-          dataServico: new Date(formData.dataInicio),
-          horaInicio: undefined,
-          horaFim: undefined,
-          horaDescansoInicio: undefined,
-          horaDescansoFim: undefined,
+          dataInicio: new Date(formData.dataInicio),
+          dataFim: new Date(formData.dataFim),
+          valorDiaria: Math.round(parseFloat(formData.valorDiaria) * 100) || 0,
           descricaoServico: formData.descricaoServico || undefined,
           valorServico: valorCalculado > 0 ? Math.round(valorCalculado) : undefined,
           observacoes: formData.observacoes || undefined,
@@ -96,11 +95,9 @@ export default function Agendamentos() {
           nomeCliente: "Cliente",
           telefoneCliente: formData.telefoneCliente || undefined,
           enderecoServico: formData.enderecoServico,
-          dataServico: new Date(formData.dataInicio),
-          horaInicio: undefined,
-          horaFim: undefined,
-          horaDescansoInicio: undefined,
-          horaDescansoFim: undefined,
+          dataInicio: new Date(formData.dataInicio),
+          dataFim: new Date(formData.dataFim),
+          valorDiaria: Math.round(parseFloat(formData.valorDiaria) * 100) || 0,
           descricaoServico: formData.descricaoServico || undefined,
           valorServico: valorCalculado > 0 ? Math.round(valorCalculado) : undefined,
           observacoes: formData.observacoes || undefined,
@@ -113,6 +110,7 @@ export default function Agendamentos() {
         enderecoServico: "",
         dataInicio: "",
         dataFim: "",
+        valorDiaria: "",
         descricaoServico: "",
         observacoes: "",
       });
@@ -196,7 +194,7 @@ export default function Agendamentos() {
                     <SelectContent>
                       {diaristas.map((d) => (
                         <SelectItem key={d.id} value={d.id.toString()}>
-                          {d.nome} - {formatCurrency(d.valorDiaria)}
+                          {d.nome}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -332,7 +330,7 @@ export default function Agendamentos() {
                   <div className="flex justify-between items-start">
                     <div>
                       <CardTitle className="text-lg">{agendamento.enderecoServico}</CardTitle>
-                      <CardDescription>{formatDate(agendamento.dataServico)}</CardDescription>
+                      <CardDescription>{formatDate(agendamento.dataInicio)} até {formatDate(agendamento.dataFim)}</CardDescription>
                     </div>
                     <span className={`px-3 py-1 rounded-full text-sm font-semibold ${getStatusColor(agendamento.status)}`}>
                       {agendamento.status}

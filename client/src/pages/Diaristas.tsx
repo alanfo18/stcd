@@ -19,7 +19,6 @@ export default function Diaristas() {
     endereco: "",
     cidade: "",
     cep: "",
-    valorDiaria: "",
   });
 
   const { data: diaristas = [], isLoading, refetch } = trpc.diarista.list.useQuery();
@@ -31,7 +30,6 @@ export default function Diaristas() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const valor = Math.round(parseFloat(formData.valorDiaria) * 100) || 0;
       if (editingId) {
         await updateMutation.mutateAsync({
           id: editingId,
@@ -41,7 +39,6 @@ export default function Diaristas() {
           endereco: formData.endereco || undefined,
           cidade: formData.cidade || undefined,
           cep: formData.cep || undefined,
-          valorDiaria: valor,
         });
       } else {
         await createMutation.mutateAsync({
@@ -51,7 +48,6 @@ export default function Diaristas() {
           endereco: formData.endereco || undefined,
           cidade: formData.cidade || undefined,
           cep: formData.cep || undefined,
-          valorDiaria: valor,
         });
       }
       setFormData({
@@ -61,7 +57,6 @@ export default function Diaristas() {
         endereco: "",
         cidade: "",
         cep: "",
-        valorDiaria: "",
       });
       setEditingId(null);
       setIsOpen(false);
@@ -80,7 +75,6 @@ export default function Diaristas() {
       endereco: diarista.endereco || "",
       cidade: diarista.cidade || "",
       cep: diarista.cep || "",
-      valorDiaria: (diarista.valorDiaria / 100).toString(),
     });
     setIsOpen(true);
   };
@@ -190,18 +184,6 @@ export default function Diaristas() {
                     />
                   </div>
                 </div>
-                <div>
-                  <Label htmlFor="valorDiaria">Valor da Diária (R$) *</Label>
-                  <Input
-                    id="valorDiaria"
-                    type="number"
-                    step="0.01"
-                    value={formData.valorDiaria}
-                    onChange={(e) => setFormData({ ...formData, valorDiaria: e.target.value })}
-                    placeholder="100.00"
-                    required
-                  />
-                </div>
                 <div className="flex gap-2 pt-4">
                   <Button type="submit" className="flex-1 bg-blue-600 hover:bg-blue-700">
                     {editingId ? "Atualizar" : "Adicionar"}
@@ -252,10 +234,6 @@ export default function Diaristas() {
                       <span className="font-semibold">{diarista.cidade}</span>
                     </div>
                   )}
-                  <div className="text-sm">
-                    <span className="text-gray-600">Valor da Diária: </span>
-                    <span className="font-semibold text-green-600">{formatCurrency(diarista.valorDiaria)}</span>
-                  </div>
                   <div className="text-sm">
                     <span className="text-gray-600">Status: </span>
                     <span className={`font-semibold ${diarista.ativa ? "text-green-600" : "text-red-600"}`}>

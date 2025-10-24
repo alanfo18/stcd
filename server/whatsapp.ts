@@ -50,22 +50,25 @@ export async function sendWhatsAppMessage(message: WhatsAppMessage): Promise<boo
  */
 export async function notifyCoordinatorNewScheduling(
   diaristaName: string,
+  especialidade: string,
   address: string,
-  serviceDate: string,
+  dataInicio: string,
+  dataFim: string,
   amount: string
 ): Promise<boolean> {
   const message = `
 🗓️ *NOVO AGENDAMENTO CONFIRMADO*
 
-*Diarista:* ${diaristaName}
-*Local:* ${address}
-*Data:* ${serviceDate}
-*Valor a Receber:* ${amount}
+👩 *Diarista:* ${diaristaName}
+💼 *Especialidade:* ${especialidade}
+📍 *Operação:* ${address}
+📅 *Período:* ${dataInicio} até ${dataFim}
+💵 *Valor a Receber:* ${amount}
 
 Agendamento registrado no sistema.
   `.trim();
 
-  // Enviar para Nunes (Coordenador)
+  // Enviar para Nunes (Coordenador) com prioridade
   const nunes = '5567999583290'; // 67 99958-3290
   const sent = await sendWhatsAppMessage({
     to: nunes,
@@ -83,7 +86,7 @@ Agendamento registrado no sistema.
   for (const phone of ccList) {
     await sendWhatsAppMessage({
       to: phone,
-      body: message,
+      body: `📁 *[CÓPIA]* ${message}`,
     });
   }
 
@@ -95,18 +98,21 @@ Agendamento registrado no sistema.
  */
 export async function notifyDiaristaNewScheduling(
   diaristaPhone: string,
+  especialidade: string,
   address: string,
-  serviceDate: string,
+  dataInicio: string,
+  dataFim: string,
   amount: string,
   description?: string
 ): Promise<boolean> {
   const message = `
 ✅ *NOVO AGENDAMENTO CONFIRMADO*
 
-*Local:* ${address}
-*Data:* ${serviceDate}
-${description ? `*Descrição:* ${description}` : ''}
-*Valor a Receber:* ${amount}
+💼 *Especialidade:* ${especialidade}
+📍 *Operação:* ${address}
+📅 *Período:* ${dataInicio} até ${dataFim}
+${description ? `📄 *Descrição:* ${description}` : ''}
+💵 *Valor a Receber:* ${amount}
 
 Confirme seu comparecimento respondendo a esta mensagem. 🙏
   `.trim();

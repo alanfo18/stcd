@@ -11,6 +11,7 @@ import {
   updateDiarista,
   deleteDiarista,
   getEspecialidades,
+  getEspecialidadeById,
   createEspecialidade,
   addEspecialidadeToDiarista,
   getDiaristaEspecialidades,
@@ -57,7 +58,6 @@ export const appRouter = router({
         endereco: z.string().optional(),
         cidade: z.string().optional(),
         cep: z.string().optional(),
-        valorDiaria: z.number().int().min(0),
       }))
       .mutation(async ({ ctx, input }) => {
         return createDiarista({
@@ -68,7 +68,6 @@ export const appRouter = router({
           endereco: input.endereco,
           cidade: input.cidade,
           cep: input.cep,
-          valorDiaria: input.valorDiaria,
         });
       }),
 
@@ -92,7 +91,6 @@ export const appRouter = router({
         endereco: z.string().optional(),
         cidade: z.string().optional(),
         cep: z.string().optional(),
-        valorDiaria: z.number().int().optional(),
         ativa: z.boolean().optional(),
       }))
       .mutation(async ({ input }) => {
@@ -166,11 +164,9 @@ export const appRouter = router({
         nomeCliente: z.string().min(1),
         telefoneCliente: z.string().optional(),
         enderecoServico: z.string().min(1),
-        dataServico: z.date(),
-        horaInicio: z.string().optional(),
-        horaFim: z.string().optional(),
-        horaDescansoInicio: z.string().optional(),
-        horaDescansoFim: z.string().optional(),
+        dataInicio: z.date(),
+        dataFim: z.date(),
+        valorDiaria: z.number().int().min(0),
         descricaoServico: z.string().optional(),
         valorServico: z.number().int().optional(),
         observacoes: z.string().optional(),
@@ -183,21 +179,23 @@ export const appRouter = router({
           nomeCliente: input.nomeCliente,
           telefoneCliente: input.telefoneCliente,
           enderecoServico: input.enderecoServico,
-          dataServico: input.dataServico,
-          horaInicio: input.horaInicio,
-          horaFim: input.horaFim,
-          horaDescansoInicio: input.horaDescansoInicio,
-          horaDescansoFim: input.horaDescansoFim,
+          dataInicio: input.dataInicio,
+          dataFim: input.dataFim,
           descricaoServico: input.descricaoServico,
+          valorDiaria: input.valorDiaria,
           valorServico: input.valorServico,
           observacoes: input.observacoes,
         });
         const diarista = await getDiaristaById(input.diaristaId);
         if (diarista && input.valorServico) {
-          const serviceDate = new Date(input.dataServico).toLocaleDateString('pt-BR');
+          const dataInicio = new Date(input.dataInicio).toLocaleDateString('pt-BR');
+          const dataFim = new Date(input.dataFim).toLocaleDateString('pt-BR');
           const amount = (input.valorServico / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
-          await notifyCoordinatorNewScheduling(diarista.nome, input.enderecoServico, serviceDate, amount);
-          await notifyDiaristaNewScheduling(diarista.telefone, input.enderecoServico, serviceDate, amount, input.descricaoServico);
+          const especialidade = await getEspecialidadeById(input.especialidadeId);
+          const especialidadeName = especialidade?.nome || 'Servico';
+          
+          await notifyCoordinatorNewScheduling(diarista.nome, especialidadeName, input.enderecoServico, dataInicio, dataFim, amount);
+          await notifyDiaristaNewScheduling(diarista.telefone, especialidadeName, input.enderecoServico, dataInicio, dataFim, amount, input.descricaoServico);
         }
         return agendamento;
       }),

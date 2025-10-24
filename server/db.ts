@@ -212,7 +212,7 @@ export async function getAgendamentosForUser(userId: number) {
   
   return db.select().from(agendamentos)
     .where(eq(agendamentos.userId, userId))
-    .orderBy(desc(agendamentos.dataServico));
+    .orderBy(desc(agendamentos.dataInicio));
 }
 
 export async function getAgendamentosForDiarista(diaristaId: number) {
@@ -221,7 +221,7 @@ export async function getAgendamentosForDiarista(diaristaId: number) {
   
   return db.select().from(agendamentos)
     .where(eq(agendamentos.diaristaId, diaristaId))
-    .orderBy(desc(agendamentos.dataServico));
+    .orderBy(desc(agendamentos.dataInicio));
 }
 
 export async function getAgendamentoById(id: number) {

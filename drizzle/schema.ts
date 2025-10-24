@@ -38,7 +38,6 @@ export const diaristas = mysqlTable("diaristas", {
   endereco: text("endereco"),
   cidade: varchar("cidade", { length: 100 }),
   cep: varchar("cep", { length: 10 }),
-  valorDiaria: int("valorDiaria").notNull(), // Valor em centavos (ex: 10000 = R$ 100,00)
   ativa: boolean("ativa").default(true).notNull(),
   dataContratacao: timestamp("dataContratacao").defaultNow().notNull(),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
@@ -47,6 +46,17 @@ export const diaristas = mysqlTable("diaristas", {
 
 export type Diarista = typeof diaristas.$inferSelect;
 export type InsertDiarista = typeof diaristas.$inferInsert;
+
+// Função auxiliar para formatar valores em BRL
+export function formatCurrency(cents: number): string {
+  return (cents / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+}
+
+// Função auxiliar para converter BRL para centavos
+export function parseCurrency(value: string): number {
+  const cleaned = value.replace(/[^0-9,.-]/g, '').replace(',', '.');
+  return Math.round(parseFloat(cleaned) * 100);
+}
 
 /**
  * Tabela de Especialidades
@@ -88,14 +98,12 @@ export const agendamentos = mysqlTable("agendamentos", {
   nomeCliente: varchar("nomeCliente", { length: 255 }).notNull(),
   telefoneCliente: varchar("telefoneCliente", { length: 20 }),
   enderecoServico: text("enderecoServico").notNull(),
-  dataServico: timestamp("dataServico").notNull(),
-  horaInicio: varchar("horaInicio", { length: 5 }), // Formato HH:MM
-  horaFim: varchar("horaFim", { length: 5 }), // Formato HH:MM
-  horaDescansoInicio: varchar("horaDescansoInicio", { length: 5 }), // Formato HH:MM
-  horaDescansoFim: varchar("horaDescansoFim", { length: 5 }), // Formato HH:MM
+  dataInicio: timestamp("dataInicio").notNull(),
+  dataFim: timestamp("dataFim").notNull(),
   descricaoServico: text("descricaoServico"),
   status: mysqlEnum("status", ["agendado", "concluido", "cancelado"]).default("agendado").notNull(),
-  valorServico: int("valorServico"), // Valor em centavos, se diferente da diária padrão
+  valorDiaria: int("valorDiaria").notNull(), // Valor da diária em centavos para este agendamento
+  valorServico: int("valorServico"), // Valor total calculado (dias × diária)
   observacoes: text("observacoes"),
   createdAt: timestamp("createdAt").defaultNow().notNull(),
   updatedAt: timestamp("updatedAt").defaultNow().onUpdateNow().notNull(),
