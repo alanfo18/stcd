@@ -193,11 +193,11 @@ export const appRouter = router({
           observacoes: input.observacoes,
         });
         const diarista = await getDiaristaById(input.diaristaId);
-        if (diarista) {
+        if (diarista && input.valorServico) {
           const serviceDate = new Date(input.dataServico).toLocaleDateString('pt-BR');
-          const serviceTime = input.horaInicio && input.horaFim ? `${input.horaInicio} - ${input.horaFim}` : 'A definir';
-          await notifyCoordinatorNewScheduling(diarista.nome, input.nomeCliente, serviceDate, serviceTime, input.enderecoServico);
-          await notifyDiaristaNewScheduling(diarista.telefone, input.nomeCliente, serviceDate, serviceTime, input.enderecoServico, input.descricaoServico);
+          const amount = (input.valorServico / 100).toLocaleString('pt-BR', { style: 'currency', currency: 'BRL' });
+          await notifyCoordinatorNewScheduling(diarista.nome, input.enderecoServico, serviceDate, amount);
+          await notifyDiaristaNewScheduling(diarista.telefone, input.enderecoServico, serviceDate, amount, input.descricaoServico);
         }
         return agendamento;
       }),

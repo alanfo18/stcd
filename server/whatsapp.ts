@@ -50,21 +50,19 @@ export async function sendWhatsAppMessage(message: WhatsAppMessage): Promise<boo
  */
 export async function notifyCoordinatorNewScheduling(
   diaristaName: string,
-  clientName: string,
+  address: string,
   serviceDate: string,
-  serviceTime: string,
-  address: string
+  amount: string
 ): Promise<boolean> {
   const message = `
-🗓️ *NOVO AGENDAMENTO*
+🗓️ *NOVO AGENDAMENTO CONFIRMADO*
 
 *Diarista:* ${diaristaName}
-*Cliente:* ${clientName}
+*Local:* ${address}
 *Data:* ${serviceDate}
-*Horário:* ${serviceTime}
-*Endereço:* ${address}
+*Valor a Receber:* ${amount}
 
-Por favor, confirme o agendamento.
+Agendamento registrado no sistema.
   `.trim();
 
   // Enviar para Nunes (Coordenador)
@@ -85,7 +83,7 @@ Por favor, confirme o agendamento.
   for (const phone of ccList) {
     await sendWhatsAppMessage({
       to: phone,
-      body: `*[CÓPIA]* ${message}`,
+      body: message,
     });
   }
 
@@ -97,22 +95,20 @@ Por favor, confirme o agendamento.
  */
 export async function notifyDiaristaNewScheduling(
   diaristaPhone: string,
-  clientName: string,
-  serviceDate: string,
-  serviceTime: string,
   address: string,
+  serviceDate: string,
+  amount: string,
   description?: string
 ): Promise<boolean> {
   const message = `
 ✅ *NOVO AGENDAMENTO CONFIRMADO*
 
-*Cliente:* ${clientName}
+*Local:* ${address}
 *Data:* ${serviceDate}
-*Horário:* ${serviceTime}
-*Endereço:* ${address}
 ${description ? `*Descrição:* ${description}` : ''}
+*Valor a Receber:* ${amount}
 
-Confirme seu comparecimento respondendo a esta mensagem.
+Confirme seu comparecimento respondendo a esta mensagem. 🙏
   `.trim();
 
   return await sendWhatsAppMessage({
@@ -140,7 +136,7 @@ export async function notifyPaymentMade(
 *Método:* ${paymentMethod}
 *Data:* ${date}
 
-Pagamento registrado no sistema.
+✨ Que haja prosperidade e abundância para todos! ✨
   `.trim();
 
   const messageToDiarista = `
@@ -150,7 +146,8 @@ Seu pagamento de ${amount} foi realizado com sucesso!
 *Método:* ${paymentMethod}
 *Data:* ${date}
 
-Obrigado pelo seu trabalho!
+✨ Que haja prosperidade e abundância em sua vida! ✨
+Obrigado pelo seu trabalho! 🙏
   `.trim();
 
   // Notificar coordenador

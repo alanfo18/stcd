@@ -26,16 +26,11 @@ export default function Agendamentos() {
   const [formData, setFormData] = useState({
     diaristaId: "",
     especialidadeId: "",
-    nomeCliente: "",
     telefoneCliente: "",
     enderecoServico: "",
-    dataServico: "",
-    horaInicio: "",
-    horaFim: "",
-    horaDescansoInicio: "",
-    horaDescansoFim: "",
+    dataInicio: "",
+    dataFim: "",
     descricaoServico: "",
-    valorServico: "",
     observacoes: "",
   });
 
@@ -51,38 +46,46 @@ export default function Agendamentos() {
     setFormData({
       diaristaId: agendamento.diaristaId.toString(),
       especialidadeId: agendamento.especialidadeId.toString(),
-      nomeCliente: agendamento.nomeCliente,
       telefoneCliente: agendamento.telefoneCliente || "",
       enderecoServico: agendamento.enderecoServico,
-      dataServico: new Date(agendamento.dataServico).toISOString().split('T')[0],
-      horaInicio: agendamento.horaInicio || "",
-      horaFim: agendamento.horaFim || "",
-      horaDescansoInicio: agendamento.horaDescansoInicio || "",
-      horaDescansoFim: agendamento.horaDescansoFim || "",
+      dataInicio: new Date(agendamento.dataServico).toISOString().split('T')[0],
+      dataFim: new Date(agendamento.dataServico).toISOString().split('T')[0],
       descricaoServico: agendamento.descricaoServico || "",
-      valorServico: agendamento.valorServico ? (agendamento.valorServico / 100).toString() : "",
       observacoes: agendamento.observacoes || "",
     });
     setIsOpen(true);
   };
 
+  const calcularValorDiaria = () => {
+    const diarista = diaristas.find(d => d.id === parseInt(formData.diaristaId));
+    if (!diarista || !formData.dataInicio || !formData.dataFim) return 0;
+
+    const inicio = new Date(formData.dataInicio);
+    const fim = new Date(formData.dataFim);
+    const diasTrabalhados = Math.ceil((fim.getTime() - inicio.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+    
+    return (diarista.valorDiaria / 100) * diasTrabalhados;
+  };
+
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
+      const valorCalculado = calcularValorDiaria() * 100; // Converter para centavos
+      
       if (editingId) {
         const updateData = {
           diaristaId: parseInt(formData.diaristaId),
           especialidadeId: parseInt(formData.especialidadeId),
-          nomeCliente: formData.nomeCliente,
+          nomeCliente: "Cliente",
           telefoneCliente: formData.telefoneCliente || undefined,
           enderecoServico: formData.enderecoServico,
-          dataServico: new Date(formData.dataServico),
-          horaInicio: formData.horaInicio || undefined,
-          horaFim: formData.horaFim || undefined,
-          horaDescansoInicio: formData.horaDescansoInicio || undefined,
-          horaDescansoFim: formData.horaDescansoFim || undefined,
+          dataServico: new Date(formData.dataInicio),
+          horaInicio: undefined,
+          horaFim: undefined,
+          horaDescansoInicio: undefined,
+          horaDescansoFim: undefined,
           descricaoServico: formData.descricaoServico || undefined,
-          valorServico: formData.valorServico ? parseInt(formData.valorServico) * 100 : undefined,
+          valorServico: valorCalculado > 0 ? Math.round(valorCalculado) : undefined,
           observacoes: formData.observacoes || undefined,
         };
         await updateMutation.mutateAsync({ id: editingId, ...updateData });
@@ -90,32 +93,27 @@ export default function Agendamentos() {
         await createMutation.mutateAsync({
           diaristaId: parseInt(formData.diaristaId),
           especialidadeId: parseInt(formData.especialidadeId),
-          nomeCliente: formData.nomeCliente,
+          nomeCliente: "Cliente",
           telefoneCliente: formData.telefoneCliente || undefined,
           enderecoServico: formData.enderecoServico,
-          dataServico: new Date(formData.dataServico),
-          horaInicio: formData.horaInicio || undefined,
-          horaFim: formData.horaFim || undefined,
-          horaDescansoInicio: formData.horaDescansoInicio || undefined,
-          horaDescansoFim: formData.horaDescansoFim || undefined,
+          dataServico: new Date(formData.dataInicio),
+          horaInicio: undefined,
+          horaFim: undefined,
+          horaDescansoInicio: undefined,
+          horaDescansoFim: undefined,
           descricaoServico: formData.descricaoServico || undefined,
-          valorServico: formData.valorServico ? parseInt(formData.valorServico) * 100 : undefined,
+          valorServico: valorCalculado > 0 ? Math.round(valorCalculado) : undefined,
           observacoes: formData.observacoes || undefined,
         });
       }
       setFormData({
         diaristaId: "",
         especialidadeId: "",
-        nomeCliente: "",
         telefoneCliente: "",
         enderecoServico: "",
-        dataServico: "",
-        horaInicio: "",
-        horaFim: "",
-        horaDescansoInicio: "",
-        horaDescansoFim: "",
+        dataInicio: "",
+        dataFim: "",
         descricaoServico: "",
-        valorServico: "",
         observacoes: "",
       });
       setEditingId(null);
@@ -154,13 +152,20 @@ export default function Agendamentos() {
     }
   };
 
+  const formatCurrency = (value: number) => {
+    return new Intl.NumberFormat("pt-BR", {
+      style: "currency",
+      currency: "BRL",
+    }).format(value);
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-7xl mx-auto">
         <div className="flex justify-between items-center mb-8">
           <div>
             <h1 className="text-3xl font-bold text-gray-900">Agendamentos</h1>
-            <p className="text-gray-600 mt-1">Gerencie os agendamentos de serviços</p>
+            <p className="text-gray-600 mt-1">Gerencie os serviços agendados</p>
           </div>
           <Button onClick={() => setLocation("/")} variant="outline" className="mr-2">
             ← Voltar
@@ -191,7 +196,7 @@ export default function Agendamentos() {
                     <SelectContent>
                       {diaristas.map((d) => (
                         <SelectItem key={d.id} value={d.id.toString()}>
-                          {d.nome}
+                          {d.nome} - {formatCurrency(d.valorDiaria)}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -214,15 +219,20 @@ export default function Agendamentos() {
                   </Select>
                 </div>
 
-                <div>
-                  <Label htmlFor="nomeCliente">Nome do Cliente *</Label>
-                  <Input
-                    id="nomeCliente"
-                    value={formData.nomeCliente}
-                    onChange={(e) => setFormData({ ...formData, nomeCliente: e.target.value })}
-                    placeholder="Nome do cliente"
-                    required
-                  />
+                <div className="bg-blue-50 border-2 border-blue-300 rounded-lg p-4">
+                  <Label htmlFor="enderecoServico" className="text-lg font-bold text-blue-900">📍 Local de Serviço (Operação) *</Label>
+                  <Select value={formData.enderecoServico} onValueChange={(value) => setFormData({ ...formData, enderecoServico: value })}>
+                    <SelectTrigger className="mt-2 border-2 border-blue-400 bg-white">
+                      <SelectValue placeholder="Selecione o local" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {ENDERECOS.map((local) => (
+                        <SelectItem key={local} value={local}>
+                          {local}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </div>
 
                 <div>
@@ -231,80 +241,39 @@ export default function Agendamentos() {
                     id="telefoneCliente"
                     value={formData.telefoneCliente}
                     onChange={(e) => setFormData({ ...formData, telefoneCliente: e.target.value })}
-                    placeholder="(11) 99999-9999"
-                  />
-                </div>
-
-                  <div>
-                    <Label htmlFor="enderecoServico">Local do Serviço *</Label>
-                    <Select value={formData.enderecoServico} onValueChange={(value) => setFormData({ ...formData, enderecoServico: value })}>
-                      <SelectTrigger id="enderecoServico">
-                        <SelectValue placeholder="Selecione o local" />
-                      </SelectTrigger>
-                      <SelectContent>
-                        {ENDERECOS.map((local) => (
-                          <SelectItem key={local} value={local}>
-                            {local}
-                          </SelectItem>
-                        ))}
-                      </SelectContent>
-                    </Select>
-                  </div>
-
-                <div>
-                  <Label htmlFor="dataServico">Data do Serviço *</Label>
-                  <Input
-                    id="dataServico"
-                    type="date"
-                    value={formData.dataServico}
-                    onChange={(e) => setFormData({ ...formData, dataServico: e.target.value })}
-                    required
+                    placeholder="(XX) XXXXX-XXXX"
                   />
                 </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
-                    <Label htmlFor="horaInicio">Hora de Início *</Label>
+                    <Label htmlFor="dataInicio">Data de Início *</Label>
                     <Input
-                      id="horaInicio"
-                      type="time"
-                      value={formData.horaInicio}
-                      onChange={(e) => setFormData({ ...formData, horaInicio: e.target.value })}
+                      id="dataInicio"
+                      type="date"
+                      value={formData.dataInicio}
+                      onChange={(e) => setFormData({ ...formData, dataInicio: e.target.value })}
                       required
                     />
                   </div>
                   <div>
-                    <Label htmlFor="horaFim">Hora de Fim *</Label>
+                    <Label htmlFor="dataFim">Data de Fim *</Label>
                     <Input
-                      id="horaFim"
-                      type="time"
-                      value={formData.horaFim}
-                      onChange={(e) => setFormData({ ...formData, horaFim: e.target.value })}
+                      id="dataFim"
+                      type="date"
+                      value={formData.dataFim}
+                      onChange={(e) => setFormData({ ...formData, dataFim: e.target.value })}
                       required
                     />
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
-                  <div>
-                    <Label htmlFor="horaDescansoInicio">Hora Descanso (Início)</Label>
-                    <Input
-                      id="horaDescansoInicio"
-                      type="time"
-                      value={formData.horaDescansoInicio || ""}
-                      onChange={(e) => setFormData({ ...formData, horaDescansoInicio: e.target.value })}
-                    />
+                {formData.diaristaId && formData.dataInicio && formData.dataFim && (
+                  <div className="bg-green-50 border-2 border-green-300 rounded-lg p-4">
+                    <p className="text-sm text-gray-600">Valor estimado a receber:</p>
+                    <p className="text-2xl font-bold text-green-600">{formatCurrency(calcularValorDiaria())}</p>
                   </div>
-                  <div>
-                    <Label htmlFor="horaDescansoFim">Hora Descanso (Fim)</Label>
-                    <Input
-                      id="horaDescansoFim"
-                      type="time"
-                      value={formData.horaDescansoFim || ""}
-                      onChange={(e) => setFormData({ ...formData, horaDescansoFim: e.target.value })}
-                    />
-                  </div>
-                </div>
+                )}
 
                 <div>
                   <Label htmlFor="descricaoServico">Descrição do Serviço</Label>
@@ -313,18 +282,6 @@ export default function Agendamentos() {
                     value={formData.descricaoServico}
                     onChange={(e) => setFormData({ ...formData, descricaoServico: e.target.value })}
                     placeholder="Descreva o serviço a ser realizado"
-                  />
-                </div>
-
-                <div>
-                  <Label htmlFor="valorServico">Valor do Serviço (R$)</Label>
-                  <Input
-                    id="valorServico"
-                    type="number"
-                    step="0.01"
-                    value={formData.valorServico}
-                    onChange={(e) => setFormData({ ...formData, valorServico: e.target.value })}
-                    placeholder="0.00"
                   />
                 </div>
 
@@ -374,8 +331,8 @@ export default function Agendamentos() {
                 <CardHeader className="pb-3">
                   <div className="flex justify-between items-start">
                     <div>
-                      <CardTitle>{agendamento.nomeCliente}</CardTitle>
-                      <CardDescription>{agendamento.enderecoServico}</CardDescription>
+                      <CardTitle className="text-lg">{agendamento.enderecoServico}</CardTitle>
+                      <CardDescription>{formatDate(agendamento.dataServico)}</CardDescription>
                     </div>
                     <span className={`px-3 py-1 rounded-full text-sm font-semibold ${getStatusColor(agendamento.status)}`}>
                       {agendamento.status}
@@ -385,12 +342,12 @@ export default function Agendamentos() {
                 <CardContent className="space-y-2">
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div>
-                      <span className="text-sm text-gray-600">Data:</span>
-                      <p className="font-semibold">{formatDate(agendamento.dataServico)}</p>
+                      <span className="text-sm text-gray-600">Diarista:</span>
+                      <p className="font-semibold">{diaristas.find(d => d.id === agendamento.diaristaId)?.nome || "—"}</p>
                     </div>
                     <div>
-                      <span className="text-sm text-gray-600">Horário:</span>
-                      <p className="font-semibold">{agendamento.horaInicio || "—"}</p>
+                      <span className="text-sm text-gray-600">Especialidade:</span>
+                      <p className="font-semibold">{especialidades.find(e => e.id === agendamento.especialidadeId)?.nome || "—"}</p>
                     </div>
                     <div>
                       <span className="text-sm text-gray-600">Telefone:</span>
@@ -399,7 +356,7 @@ export default function Agendamentos() {
                     <div>
                       <span className="text-sm text-gray-600">Valor:</span>
                       <p className="font-semibold text-green-600">
-                        {agendamento.valorServico ? `R$ ${(agendamento.valorServico / 100).toFixed(2)}` : "—"}
+                        {agendamento.valorServico ? formatCurrency(agendamento.valorServico) : "—"}
                       </p>
                     </div>
                   </div>
