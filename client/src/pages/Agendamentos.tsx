@@ -266,7 +266,21 @@ export default function Agendamentos() {
                   </div>
                 </div>
 
-                {formData.diaristaId && formData.dataInicio && formData.dataFim && (
+                <div>
+                  <Label htmlFor="valorDiaria">💵 Valor da Diária (R$) *</Label>
+                  <Input
+                    id="valorDiaria"
+                    type="number"
+                    step="0.01"
+                    min="0"
+                    value={formData.valorDiaria}
+                    onChange={(e) => setFormData({ ...formData, valorDiaria: e.target.value })}
+                    placeholder="Ex: 150.00"
+                    required
+                  />
+                </div>
+
+                {formData.diaristaId && formData.dataInicio && formData.dataFim && formData.valorDiaria && (
                   <div className="bg-green-50 border-2 border-green-300 rounded-lg p-4">
                     <p className="text-sm text-gray-600">Valor estimado a receber:</p>
                     <p className="text-2xl font-bold text-green-600">{formatCurrency(calcularValorDiaria())}</p>
