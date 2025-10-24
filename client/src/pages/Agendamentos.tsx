@@ -51,7 +51,7 @@ export default function Agendamentos() {
       enderecoServico: agendamento.enderecoServico,
       dataInicio: new Date(agendamento.dataInicio).toISOString().split('T')[0],
       dataFim: new Date(agendamento.dataFim).toISOString().split('T')[0],
-      valorDiaria: (agendamento.valorDiaria / 100).toString(),
+      valorDiaria: (agendamento.valorDiaria / 100).toFixed(2),
       descricaoServico: agendamento.descricaoServico || "",
       observacoes: agendamento.observacoes || "",
     });
@@ -65,13 +65,13 @@ export default function Agendamentos() {
     const fim = new Date(formData.dataFim);
     const diasTrabalhados = Math.ceil((fim.getTime() - inicio.getTime()) / (1000 * 60 * 60 * 24)) + 1;
     
-    return (parseFloat(formData.valorDiaria) / 100) * diasTrabalhados;
+    return parseFloat(formData.valorDiaria) * diasTrabalhados;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const valorCalculado = calcularValorDiaria() * 100; // Converter para centavos
+      const valorCalculado = calcularValorDiaria(); // Valor em reais
       
       if (editingId) {
         const updateData = {
@@ -82,7 +82,7 @@ export default function Agendamentos() {
           enderecoServico: formData.enderecoServico,
           dataInicio: new Date(formData.dataInicio),
           dataFim: new Date(formData.dataFim),
-          valorDiaria: Math.round(parseFloat(formData.valorDiaria) * 100) || 0,
+          valorDiaria: Math.round(parseFloat(formData.valorDiaria) * 100) || 0, // Armazenar em centavos
           descricaoServico: formData.descricaoServico || undefined,
           valorServico: valorCalculado > 0 ? Math.round(valorCalculado) : undefined,
           observacoes: formData.observacoes || undefined,
@@ -97,7 +97,7 @@ export default function Agendamentos() {
           enderecoServico: formData.enderecoServico,
           dataInicio: new Date(formData.dataInicio),
           dataFim: new Date(formData.dataFim),
-          valorDiaria: Math.round(parseFloat(formData.valorDiaria) * 100) || 0,
+          valorDiaria: Math.round(parseFloat(formData.valorDiaria) * 100) || 0, // Armazenar em centavos
           descricaoServico: formData.descricaoServico || undefined,
           valorServico: valorCalculado > 0 ? Math.round(valorCalculado) : undefined,
           observacoes: formData.observacoes || undefined,
@@ -368,7 +368,7 @@ export default function Agendamentos() {
                     <div>
                       <span className="text-sm text-gray-600">Valor:</span>
                       <p className="font-semibold text-green-600">
-                        {agendamento.valorServico ? formatCurrency(agendamento.valorServico) : "—"}
+                        {agendamento.valorServico ? formatCurrency(agendamento.valorServico / 100) : "—"}
                       </p>
                     </div>
                   </div>
