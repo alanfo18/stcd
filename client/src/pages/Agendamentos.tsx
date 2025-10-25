@@ -361,10 +361,7 @@ export default function Agendamentos() {
                       <span className="text-sm text-gray-600">Especialidade:</span>
                       <p className="font-semibold">{especialidades.find(e => e.id === agendamento.especialidadeId)?.nome || "—"}</p>
                     </div>
-                    <div>
-                      <span className="text-sm text-gray-600">Telefone:</span>
-                      <p className="font-semibold">{agendamento.telefoneCliente || "—"}</p>
-                    </div>
+
                     <div>
                       <span className="text-sm text-gray-600">Valor:</span>
                       <p className="font-semibold text-green-600">

@@ -95,8 +95,6 @@ export const agendamentos = mysqlTable("agendamentos", {
   userId: int("userId").notNull(), // Usuário que criou o agendamento
   diaristaId: int("diaristaId").notNull(),
   especialidadeId: int("especialidadeId").notNull(),
-  nomeCliente: varchar("nomeCliente", { length: 255 }).notNull(),
-  telefoneCliente: varchar("telefoneCliente", { length: 20 }),
   enderecoServico: text("enderecoServico").notNull(),
   dataInicio: timestamp("dataInicio").notNull(),
   dataFim: timestamp("dataFim").notNull(),

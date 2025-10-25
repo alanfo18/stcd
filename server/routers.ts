@@ -181,8 +181,6 @@ export const appRouter = router({
           userId: ctx.user.id,
           diaristaId: input.diaristaId,
           especialidadeId: input.especialidadeId,
-          nomeCliente: input.nomeCliente,
-          telefoneCliente: input.telefoneCliente,
           enderecoServico: input.enderecoServico,
           dataInicio: input.dataInicio,
           dataFim: input.dataFim,
