@@ -75,6 +75,193 @@ Data: ${new Date().toLocaleDateString("pt-BR")}
     alert("Recibo copiado para a área de transferência!\nVocê pode colar em um documento ou imprimir.");
   };
 
+  const imprimirRecibo = (pagamento: any) => {
+    const agendamento = agendamentos.find((a) => a.id === pagamento.agendamentoId);
+    const diarista = diaristas.find((d) => d.id === agendamento?.diaristaId);
+
+    const reciboHTML = `
+    <!DOCTYPE html>
+    <html>
+    <head>
+      <meta charset="UTF-8">
+      <title>Recibo - ${diarista?.nome || "Diarista"}</title>
+      <style>
+        body {
+          font-family: 'Courier New', monospace;
+          margin: 20px;
+          background: white;
+        }
+        .recibo {
+          max-width: 800px;
+          margin: 0 auto;
+          border: 2px solid #000;
+          padding: 20px;
+          background: white;
+        }
+        .header {
+          text-align: center;
+          border-bottom: 2px solid #000;
+          padding-bottom: 10px;
+          margin-bottom: 20px;
+        }
+        .header h1 {
+          margin: 0;
+          font-size: 24px;
+        }
+        .header p {
+          margin: 5px 0;
+          font-size: 12px;
+        }
+        .section {
+          margin-bottom: 15px;
+        }
+        .section h3 {
+          margin: 10px 0 5px 0;
+          font-size: 14px;
+          border-bottom: 1px solid #000;
+        }
+        .field {
+          display: flex;
+          justify-content: space-between;
+          margin: 5px 0;
+          font-size: 12px;
+        }
+        .label {
+          font-weight: bold;
+        }
+        .footer {
+          margin-top: 30px;
+          text-align: center;
+          font-size: 11px;
+          border-top: 2px solid #000;
+          padding-top: 10px;
+        }
+        .signature {
+          margin-top: 40px;
+          display: flex;
+          justify-content: space-around;
+        }
+        .signature-line {
+          text-align: center;
+          font-size: 12px;
+        }
+        .signature-line p {
+          margin: 0;
+          padding-top: 30px;
+          border-top: 1px solid #000;
+        }
+        @media print {
+          body {
+            margin: 0;
+            padding: 0;
+          }
+        }
+      </style>
+    </head>
+    <body>
+      <div class="recibo">
+        <div class="header">
+          <h1>067 VINHOS LTDA</h1>
+          <p>CNPJ: 34.257.880/0001-06</p>
+          <p>R Manoel Laburu, 83 - Campo Grande, MS</p>
+          <h2 style="margin: 10px 0 0 0; font-size: 18px;">RECIBO DE PAGAMENTO</h2>
+        </div>
+
+        <div class="section">
+          <h3>DADOS DO RECEBEDOR</h3>
+          <div class="field">
+            <span class="label">Nome:</span>
+            <span>${diarista?.nome || "—"}</span>
+          </div>
+          <div class="field">
+            <span class="label">Telefone:</span>
+            <span>${diarista?.telefone || "—"}</span>
+          </div>
+          <div class="field">
+            <span class="label">CPF/CNPJ:</span>
+            <span>_________________________</span>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>DADOS DO SERVIÇO</h3>
+          <div class="field">
+            <span class="label">Descrição:</span>
+            <span>${agendamento?.descricaoServico || "Serviço de Limpeza"}</span>
+          </div>
+          <div class="field">
+            <span class="label">Data de Início:</span>
+            <span>${formatDate(agendamento?.dataInicio || new Date())}</span>
+          </div>
+          <div class="field">
+            <span class="label">Data de Término:</span>
+            <span>${formatDate(agendamento?.dataFim || new Date())}</span>
+          </div>
+          <div class="field">
+            <span class="label">Local:</span>
+            <span>${agendamento?.enderecoServico || "—"}</span>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>DADOS DO PAGAMENTO</h3>
+          <div class="field">
+            <span class="label">Valor:</span>
+            <span>${formatCurrency(pagamento.valor)}</span>
+          </div>
+          <div class="field">
+            <span class="label">Método:</span>
+            <span>${pagamento.metodo}</span>
+          </div>
+          <div class="field">
+            <span class="label">Data:</span>
+            <span>${formatDate(pagamento.dataPagamento || pagamento.createdAt)}</span>
+          </div>
+          <div class="field">
+            <span class="label">Status:</span>
+            <span>${pagamento.status.toUpperCase()}</span>
+          </div>
+        </div>
+
+        <div class="section">
+          <h3>OBSERVAÇÕES LEGAIS</h3>
+          <p style="font-size: 12px; line-height: 1.6;">
+            Este recibo comprova o pagamento de serviço prestado conforme legislação trabalhista vigente. 
+            O recebedor declara ter recebido a quantia acima em perfeito estado.
+          </p>
+        </div>
+
+        <div class="signature">
+          <div class="signature-line">
+            <p>Assinatura do Recebedor</p>
+          </div>
+          <div class="signature-line">
+            <p>Assinatura da Empresa</p>
+          </div>
+        </div>
+
+        <div class="footer">
+          <p>Data: ${new Date().toLocaleDateString("pt-BR")}</p>
+          <p style="margin-top: 20px; border-top: 1px solid #000; padding-top: 10px;">
+            Documento gerado automaticamente pelo Sistema de Controle de Diaristas (STCD) - 067 Vinhos
+          </p>
+        </div>
+      </div>
+    </body>
+    </html>
+    `;
+
+    const printWindow = window.open("", "", "width=800,height=600");
+    if (printWindow) {
+      printWindow.document.write(reciboHTML);
+      printWindow.document.close();
+      printWindow.focus();
+      setTimeout(() => {
+        printWindow.print();
+      }, 250);
+    }
+  };
+
   return (
     <div className="min-h-screen bg-gray-50 p-4">
       <div className="max-w-7xl mx-auto">
@@ -204,12 +391,20 @@ Data: ${new Date().toLocaleDateString("pt-BR")}
 ═══════════════════════════════════════════════════════════════════
                             `}
                           </div>
-                          <Button
-                            onClick={() => gerarRecibo(pagamento)}
-                            className="w-full bg-green-600 hover:bg-green-700"
-                          >
-                            📋 Copiar Recibo
-                          </Button>
+                          <div className="flex gap-2 pt-4">
+                            <Button
+                              onClick={() => gerarRecibo(pagamento)}
+                              className="flex-1 bg-green-600 hover:bg-green-700"
+                            >
+                              📋 Copiar Recibo
+                            </Button>
+                            <Button
+                              onClick={() => imprimirRecibo(pagamento)}
+                              className="flex-1 bg-blue-600 hover:bg-blue-700"
+                            >
+                              🖨️ Imprimir
+                            </Button>
+                          </div>
                         </DialogContent>
                       </Dialog>
                       <Button
