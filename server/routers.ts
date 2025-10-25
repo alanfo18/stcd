@@ -54,10 +54,10 @@ export const appRouter = router({
       .input(z.object({
         nome: z.string().min(1),
         telefone: z.string().min(1),
-        email: z.string().email().optional().or(z.literal('')),
-        endereco: z.string().optional().or(z.literal('')),
-        cidade: z.string().optional().or(z.literal('')),
-        cep: z.string().optional().or(z.literal('')),
+        email: z.union([z.string().email(), z.literal('')]).optional(),
+        endereco: z.union([z.string(), z.literal('')]).optional(),
+        cidade: z.union([z.string(), z.literal('')]).optional(),
+        cep: z.union([z.string(), z.literal('')]).optional(),
       }))
       .mutation(async ({ ctx, input }) => {
         try {
@@ -92,10 +92,10 @@ export const appRouter = router({
         id: z.number(),
         nome: z.string().optional(),
         telefone: z.string().optional(),
-        email: z.string().email().optional(),
-        endereco: z.string().optional(),
-        cidade: z.string().optional(),
-        cep: z.string().optional(),
+        email: z.union([z.string().email(), z.literal('')]).optional(),
+        endereco: z.union([z.string(), z.literal('')]).optional(),
+        cidade: z.union([z.string(), z.literal('')]).optional(),
+        cep: z.union([z.string(), z.literal('')]).optional(),
         ativa: z.boolean().optional(),
       }))
       .mutation(async ({ input }) => {
