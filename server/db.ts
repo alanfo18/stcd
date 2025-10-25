@@ -112,7 +112,18 @@ export async function createDiarista(data: InsertDiarista) {
   const db = await getDb();
   if (!db) throw new Error("Database not available");
   
-  const result = await db.insert(diaristas).values(data);
+  if (!data.userId) throw new Error("userId is required");
+  
+  const result = await db.insert(diaristas).values({
+    userId: data.userId,
+    nome: data.nome,
+    telefone: data.telefone,
+    email: data.email || null,
+    endereco: data.endereco || null,
+    cidade: data.cidade || null,
+    cep: data.cep || null,
+    ativa: data.ativa ?? true,
+  });
   return result;
 }
 

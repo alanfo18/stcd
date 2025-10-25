@@ -1,0 +1,80 @@
+🎯 TESTE DO SISTEMA DE CONTROLE DE DIARISTAS (STCD)
+
+Oi pessoal! 👋
+
+Estamos lançando o novo Sistema de Controle de Diaristas (STCD) e precisamos da ajuda de vocês para testar e reportar qualquer erro ou bug! 🚀
+
+📱 ACESSO AO SISTEMA:
+URL: https://w8qon.manus.space
+Login: Use suas credenciais Manus OAuth
+
+✅ FUNCIONALIDADES PARA TESTAR:
+
+1️⃣ DASHBOARD (Monitoramento)
+- Verifique agendamentos pendentes
+- Pagamentos em atraso
+- Receita do mês
+- Taxa de conclusão
+- Diaristas ativas
+
+2️⃣ GERENCIAR DIARISTAS
+- Clique em "Diaristas" → "Gerenciar"
+- Teste "Adicionar Diarista" (Nome e Telefone obrigatórios)
+- Teste "Editar" (botão ✏️)
+- Teste "Deletar" (botão 🗑️)
+
+3️⃣ AGENDAR SERVIÇOS
+- Clique em "Agendamentos" → "Agendar"
+- Selecione: Diarista, Especialidade, Local (Havalon, Cantina Havalon, Pegasus, Cantina Pegasus, Aeroporto, Quiosque, Ima)
+- Preencha: Telefone, Data Início, Data Fim, Valor Diária
+- Verifique o cálculo automático (dias × diária)
+- ⚠️ IMPORTANTE: Verifique se a diarista recebeu notificação no WhatsApp!
+
+4️⃣ REGISTRAR PAGAMENTOS
+- Clique em "Pagamentos" → "Registrar"
+- Selecione agendamento, valor, método (Dinheiro/PIX/Cartão)
+- Faça upload do comprovante (opcional)
+- ⚠️ IMPORTANTE: Verifique se Nunes e a diarista receberam notificação no WhatsApp!
+
+5️⃣ VISUALIZAR RELATÓRIOS
+- Clique em "Relatórios" → "Visualizar"
+- Verifique se os números estão corretos
+- Confira gráficos e estatísticas
+
+6️⃣ EMITIR RECIBOS
+- Clique em "Recibos" → "Emitir"
+- Clique em "📄 Visualizar Recibo"
+- Teste "📋 Copiar Recibo"
+- Teste "🖨️ Imprimir" (deve imprimir apenas o recibo, não a página inteira)
+
+🔔 NOTIFICAÇÕES WHATSAPP:
+Ao agendar: Nunes, Alan, Bárbara, Samuel e a diarista recebem notificação
+Ao pagar: Nunes e a diarista recebem confirmação com "prosperidade e abundância"
+
+📝 ENCONTROU UM BUG? REPORTE ASSIM:
+
+🔴 TÍTULO: [Descrição breve]
+🔴 SEVERIDADE: Crítico / Alto / Médio / Baixo
+🔴 LOCALIZAÇÃO: Qual página/seção
+🔴 DESCRIÇÃO: O que aconteceu
+🔴 PASSOS: Como reproduzir
+🔴 SCREENSHOT: Se possível, anexe imagem
+
+📲 ENVIE OS RELATÓRIOS PARA:
+WhatsApp: 67 999820888 (Alan)
+Email: [seu email]
+
+⏰ PRAZO: Enviem os testes até [DATA]
+
+💡 DICAS:
+✅ Teste em celular (Safari/Chrome)
+✅ Teste em desktop
+✅ Use dados reais da 067 Vinhos
+✅ Teste fluxos completos (criar diarista → agendar → pagar → recibo)
+✅ Verifique todas as notificações WhatsApp
+
+❓ DÚVIDAS? Pode me chamar! 😊
+
+Obrigado pela ajuda! Juntos vamos criar um sistema fantástico! 🎉
+
+067 Vinhos - Sistema de Controle de Diaristas (STCD)
