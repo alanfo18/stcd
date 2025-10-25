@@ -12,6 +12,7 @@ export default function Diaristas() {
   const [, setLocation] = useLocation();
   const [isOpen, setIsOpen] = useState(false);
   const [editingId, setEditingId] = useState<number | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [formData, setFormData] = useState({
     nome: "",
     telefone: "",
@@ -29,6 +30,11 @@ export default function Diaristas() {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.nome || !formData.telefone) {
+      alert("Por favor, preencha os campos obrigatórios (Nome e Telefone)");
+      return;
+    }
+    setIsSubmitting(true);
     try {
       if (editingId) {
         await updateMutation.mutateAsync({
@@ -63,6 +69,9 @@ export default function Diaristas() {
       refetch();
     } catch (error) {
       console.error("Erro ao salvar diarista:", error);
+      alert("Erro ao salvar diarista. Tente novamente.");
+    } finally {
+      setIsSubmitting(false);
     }
   };
 
@@ -185,8 +194,12 @@ export default function Diaristas() {
                   </div>
                 </div>
                 <div className="flex gap-2 pt-4">
-                  <Button type="submit" className="flex-1 bg-blue-600 hover:bg-blue-700">
-                    {editingId ? "Atualizar" : "Adicionar"}
+                  <Button 
+                    type="submit" 
+                    className="flex-1 bg-blue-600 hover:bg-blue-700"
+                    disabled={isSubmitting}
+                  >
+                    {isSubmitting ? "Salvando..." : (editingId ? "Atualizar" : "Adicionar")}
                   </Button>
                   <Button type="button" variant="outline" className="flex-1" onClick={() => setIsOpen(false)}>
                     Cancelar
