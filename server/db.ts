@@ -139,7 +139,12 @@ export async function getDiaristasForUser(userId: number) {
   const db = await getDb();
   if (!db) return [];
   
-  return db.select().from(diaristas).where(eq(diaristas.userId, userId));
+  try {
+    return await db.select().from(diaristas).where(eq(diaristas.userId, userId));
+  } catch (error) {
+    console.error('[getDiaristasForUser Error]', error);
+    return [];
+  }
 }
 
 export async function getDiaristaById(id: number) {
