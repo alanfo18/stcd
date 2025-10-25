@@ -24,9 +24,15 @@ export default function Diaristas() {
 
   const { data: diaristas = [], isLoading, refetch } = trpc.diarista.list.useQuery();
   const { data: especialidades = [] } = trpc.especialidade.list.useQuery();
-  const createMutation = trpc.diarista.create.useMutation();
-  const updateMutation = trpc.diarista.update.useMutation();
-  const deleteMutation = trpc.diarista.delete.useMutation();
+  const createMutation = trpc.diarista.create.useMutation({
+    onSuccess: () => refetch(),
+  });
+  const updateMutation = trpc.diarista.update.useMutation({
+    onSuccess: () => refetch(),
+  });
+  const deleteMutation = trpc.diarista.delete.useMutation({
+    onSuccess: () => refetch(),
+  });
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
