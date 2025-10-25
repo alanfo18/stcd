@@ -54,21 +54,26 @@ export const appRouter = router({
       .input(z.object({
         nome: z.string().min(1),
         telefone: z.string().min(1),
-        email: z.string().email().optional(),
-        endereco: z.string().optional(),
-        cidade: z.string().optional(),
-        cep: z.string().optional(),
+        email: z.string().email().optional().or(z.literal('')),
+        endereco: z.string().optional().or(z.literal('')),
+        cidade: z.string().optional().or(z.literal('')),
+        cep: z.string().optional().or(z.literal('')),
       }))
       .mutation(async ({ ctx, input }) => {
-        return createDiarista({
-          userId: ctx.user.id,
-          nome: input.nome,
-          telefone: input.telefone,
-          email: input.email,
-          endereco: input.endereco,
-          cidade: input.cidade,
-          cep: input.cep,
-        });
+        try {
+          return await createDiarista({
+            userId: ctx.user.id,
+            nome: input.nome,
+            telefone: input.telefone,
+            email: input.email || undefined,
+            endereco: input.endereco || undefined,
+            cidade: input.cidade || undefined,
+            cep: input.cep || undefined,
+          });
+        } catch (error) {
+          console.error('[Diarista Create Error]', error);
+          throw error;
+        }
       }),
 
     list: protectedProcedure
