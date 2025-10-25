@@ -113,18 +113,26 @@ export async function createDiarista(data: InsertDiarista) {
   if (!db) throw new Error("Database not available");
   
   if (!data.userId) throw new Error("userId is required");
+  if (!data.nome) throw new Error("nome is required");
+  if (!data.telefone) throw new Error("telefone is required");
   
-  const result = await db.insert(diaristas).values({
-    userId: data.userId,
-    nome: data.nome,
-    telefone: data.telefone,
-    email: data.email || null,
-    endereco: data.endereco || null,
-    cidade: data.cidade || null,
-    cep: data.cep || null,
-    ativa: data.ativa ?? true,
-  });
-  return result;
+  try {
+    await db.insert(diaristas).values({
+      userId: data.userId,
+      nome: data.nome,
+      telefone: data.telefone,
+      email: data.email || null,
+      endereco: data.endereco || null,
+      cidade: data.cidade || null,
+      cep: data.cep || null,
+      ativa: data.ativa ?? true,
+    });
+    
+    return { success: true, message: "Diarista criada com sucesso" };
+  } catch (error) {
+    console.error('[createDiarista Error]', error);
+    throw new Error(`Erro ao criar diarista: ${error instanceof Error ? error.message : "Erro desconhecido"}`);
+  }
 }
 
 export async function getDiaristasForUser(userId: number) {
