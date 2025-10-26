@@ -166,8 +166,6 @@ export const appRouter = router({
       .input(z.object({
         diaristaId: z.number(),
         especialidadeId: z.number(),
-        nomeCliente: z.string().min(1),
-        telefoneCliente: z.string().optional(),
         enderecoServico: z.string().min(1),
         dataInicio: z.date(),
         dataFim: z.date(),
@@ -224,15 +222,11 @@ export const appRouter = router({
       .input(z.object({
         id: z.number(),
         status: z.enum(["agendado", "concluido", "cancelado"]).optional(),
-        nomeCliente: z.string().optional(),
-        telefoneCliente: z.string().optional(),
         enderecoServico: z.string().optional(),
-        dataServico: z.date().optional(),
-        horaInicio: z.string().optional(),
-        horaFim: z.string().optional(),
-        horaDescansoInicio: z.string().optional(),
-        horaDescansoFim: z.string().optional(),
+        dataInicio: z.date().optional(),
+        dataFim: z.date().optional(),
         descricaoServico: z.string().optional(),
+        valorDiaria: z.number().int().optional(),
         valorServico: z.number().int().optional(),
         observacoes: z.string().optional(),
       }))
