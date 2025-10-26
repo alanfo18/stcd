@@ -166,8 +166,6 @@ export const appRouter = router({
       .input(z.object({
         diaristaId: z.number(),
         especialidadeId: z.number(),
-        nomeCliente: z.string().min(1),
-        telefoneCliente: z.string().optional(),
         enderecoServico: z.string().min(1),
         dataInicio: z.date(),
         dataFim: z.date(),
