@@ -26,6 +26,7 @@ export default function Agendamentos() {
   const [formData, setFormData] = useState({
     diaristaId: "",
     especialidadeId: "",
+    telefoneCliente: "",
     enderecoServico: "",
     dataInicio: "",
     dataFim: "",
@@ -46,6 +47,7 @@ export default function Agendamentos() {
     setFormData({
       diaristaId: agendamento.diaristaId.toString(),
       especialidadeId: agendamento.especialidadeId.toString(),
+      telefoneCliente: agendamento.telefoneCliente || "",
       enderecoServico: agendamento.enderecoServico,
       dataInicio: new Date(agendamento.dataInicio).toISOString().split('T')[0],
       dataFim: new Date(agendamento.dataFim).toISOString().split('T')[0],
@@ -63,14 +65,7 @@ export default function Agendamentos() {
     const fim = new Date(formData.dataFim);
     const diasTrabalhados = Math.ceil((fim.getTime() - inicio.getTime()) / (1000 * 60 * 60 * 24)) + 1;
     
-    return parseFloat(formData.valorDiaria) * diasTrabalhados; // Retorna em reais
-  };
-
-  const calcularDiasTrabalhados = () => {
-    if (!formData.dataInicio || !formData.dataFim) return 0;
-    const inicio = new Date(formData.dataInicio);
-    const fim = new Date(formData.dataFim);
-    return Math.ceil((fim.getTime() - inicio.getTime()) / (1000 * 60 * 60 * 24)) + 1;
+    return parseFloat(formData.valorDiaria) * diasTrabalhados;
   };
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -78,21 +73,18 @@ export default function Agendamentos() {
     try {
       const valorCalculado = calcularValorDiaria(); // Valor em reais
       
-      const diasTrabalhados = calcularDiasTrabalhados();
-      const valorServico = diasTrabalhados > 0 && formData.valorDiaria 
-        ? Math.round(parseFloat(formData.valorDiaria) * diasTrabalhados * 100) 
-        : undefined;
-
       if (editingId) {
         const updateData = {
           diaristaId: parseInt(formData.diaristaId),
           especialidadeId: parseInt(formData.especialidadeId),
+          nomeCliente: "Cliente",
+          telefoneCliente: formData.telefoneCliente || undefined,
           enderecoServico: formData.enderecoServico,
           dataInicio: new Date(formData.dataInicio),
           dataFim: new Date(formData.dataFim),
           valorDiaria: Math.round(parseFloat(formData.valorDiaria) * 100) || 0, // Armazenar em centavos
           descricaoServico: formData.descricaoServico || undefined,
-          valorServico: valorServico,
+          valorServico: valorCalculado > 0 ? Math.round(valorCalculado) : undefined,
           observacoes: formData.observacoes || undefined,
         };
         await updateMutation.mutateAsync({ id: editingId, ...updateData });
@@ -100,18 +92,21 @@ export default function Agendamentos() {
         await createMutation.mutateAsync({
           diaristaId: parseInt(formData.diaristaId),
           especialidadeId: parseInt(formData.especialidadeId),
+          nomeCliente: "Cliente",
+          telefoneCliente: formData.telefoneCliente || undefined,
           enderecoServico: formData.enderecoServico,
           dataInicio: new Date(formData.dataInicio),
           dataFim: new Date(formData.dataFim),
           valorDiaria: Math.round(parseFloat(formData.valorDiaria) * 100) || 0, // Armazenar em centavos
           descricaoServico: formData.descricaoServico || undefined,
-          valorServico: valorServico,
+          valorServico: valorCalculado > 0 ? Math.round(valorCalculado) : undefined,
           observacoes: formData.observacoes || undefined,
         });
       }
       setFormData({
         diaristaId: "",
         especialidadeId: "",
+        telefoneCliente: "",
         enderecoServico: "",
         dataInicio: "",
         dataFim: "",
@@ -192,7 +187,7 @@ export default function Agendamentos() {
               <form onSubmit={handleSubmit} className="space-y-4">
                 <div>
                   <Label htmlFor="diarista">Diarista *</Label>
-                  <Select value={formData.diaristaId} onValueChange={(value) => { console.log('Diarista selecionada:', value); setFormData({ ...formData, diaristaId: value }); }}>
+                  <Select value={formData.diaristaId} onValueChange={(value) => setFormData({ ...formData, diaristaId: value })}>
                     <SelectTrigger>
                       <SelectValue placeholder="Selecione uma diarista" />
                     </SelectTrigger>
@@ -238,7 +233,15 @@ export default function Agendamentos() {
                   </Select>
                 </div>
 
-
+                <div>
+                  <Label htmlFor="telefoneCliente">Telefone do Cliente</Label>
+                  <Input
+                    id="telefoneCliente"
+                    value={formData.telefoneCliente}
+                    onChange={(e) => setFormData({ ...formData, telefoneCliente: e.target.value })}
+                    placeholder="(XX) XXXXX-XXXX"
+                  />
+                </div>
 
                 <div className="grid grid-cols-2 gap-4">
                   <div>
