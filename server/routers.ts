@@ -31,6 +31,8 @@ import {
   updateAvaliacao,
   getPagamentosForDiarista,
   getAgendamentosForDiarista,
+  getAgendamentosWithEspecialidade,
+  getAgendamentosWithEspecialidadeAll,
 } from "./db";
 
 export const appRouter = router({
@@ -203,7 +205,7 @@ export const appRouter = router({
 
     list: protectedProcedure
       .query(async ({ ctx }) => {
-        return getAgendamentosForUser(ctx.user.id);
+        return getAgendamentosWithEspecialidade(ctx.user.id);
       }),
 
     listForDiarista: protectedProcedure

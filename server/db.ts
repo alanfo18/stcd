@@ -549,3 +549,63 @@ export async function updateAvaliacao(id: number, updates: Partial<InsertAvaliac
   }
 }
 
+
+
+// ========== AGENDAMENTOS COM ESPECIALIDADE ==========
+
+export async function getAgendamentosWithEspecialidade(userId: number): Promise<any[]> {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get agendamentos: database not available");
+    return [];
+  }
+
+  try {
+    const result = await db.select().from(agendamentos).where(eq(agendamentos.userId, userId)).orderBy(desc(agendamentos.dataInicio));
+    
+    // Enriquecer com dados de especialidade
+    const enriched = await Promise.all(
+      result.map(async (agendamento: any) => {
+        const especialidade = await getEspecialidadeById(agendamento.especialidadeId);
+        return {
+          ...agendamento,
+          especialidade: especialidade?.nome || null,
+        };
+      })
+    );
+    
+    return enriched;
+  } catch (error) {
+    console.error("[Database] Error getting agendamentos with especialidade:", error);
+    return [];
+  }
+}
+
+export async function getAgendamentosWithEspecialidadeAll(): Promise<any[]> {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot get agendamentos: database not available");
+    return [];
+  }
+
+  try {
+    const result = await db.select().from(agendamentos).orderBy(desc(agendamentos.dataInicio));
+    
+    // Enriquecer com dados de especialidade
+    const enriched = await Promise.all(
+      result.map(async (agendamento: any) => {
+        const especialidade = await getEspecialidadeById(agendamento.especialidadeId);
+        return {
+          ...agendamento,
+          especialidade: especialidade?.nome || null,
+        };
+      })
+    );
+    
+    return enriched;
+  } catch (error) {
+    console.error("[Database] Error getting all agendamentos with especialidade:", error);
+    return [];
+  }
+}
+

@@ -31,7 +31,8 @@ export default function Home() {
               </p>
               <Button 
                 onClick={() => window.location.href = getLoginUrl()}
-                className="w-full bg-blue-600 hover:bg-blue-700"
+                className="w-full"
+                style={{backgroundColor: '#471324'}}
                 size="lg"
               >
                 Fazer Login
@@ -106,7 +107,7 @@ export default function Home() {
               <CardTitle className="text-lg">📊 Dashboard</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-2xl font-bold text-indigo-600">Monitorar</p>
+              <p className="text-2xl font-bold" style={{color: '#471324'}}>Monitorar</p>
               <p className="text-sm text-gray-600 mt-1">Visão geral do sistema</p>
             </CardContent>
           </Card>
@@ -116,7 +117,7 @@ export default function Home() {
               <CardTitle className="text-lg">👥 Diaristas</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-2xl font-bold text-blue-600">Gerenciar</p>
+              <p className="text-2xl font-bold" style={{color: '#471324'}}>Gerenciar</p>
               <p className="text-sm text-gray-600 mt-1">Cadastre e gerencie diaristas</p>
             </CardContent>
           </Card>
@@ -126,7 +127,7 @@ export default function Home() {
               <CardTitle className="text-lg">📅 Agendamentos</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-2xl font-bold text-green-600">Agendar</p>
+              <p className="text-2xl font-bold" style={{color: '#471324'}}>Agendar</p>
               <p className="text-sm text-gray-600 mt-1">Crie novos agendamentos</p>
             </CardContent>
           </Card>
@@ -136,7 +137,7 @@ export default function Home() {
               <CardTitle className="text-lg">💰 Pagamentos</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-2xl font-bold text-purple-600">Registrar</p>
+              <p className="text-2xl font-bold" style={{color: '#471324'}}>Registrar</p>
               <p className="text-sm text-gray-600 mt-1">Registre pagamentos</p>
             </CardContent>
           </Card>
@@ -146,7 +147,7 @@ export default function Home() {
               <CardTitle className="text-lg">📊 Relatórios</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-2xl font-bold text-orange-600">Visualizar</p>
+              <p className="text-2xl font-bold" style={{color: '#471324'}}>Visualizar</p>
               <p className="text-sm text-gray-600 mt-1">Veja relatórios e estatísticas</p>
             </CardContent>
           </Card>
@@ -156,7 +157,7 @@ export default function Home() {
               <CardTitle className="text-lg">📋 Recibos</CardTitle>
             </CardHeader>
             <CardContent>
-              <p className="text-2xl font-bold text-red-600">Emitir</p>
+              <p className="text-2xl font-bold" style={{color: '#471324'}}>Emitir</p>
               <p className="text-sm text-gray-600 mt-1">Gere recibos de pagamento</p>
             </CardContent>
           </Card>
