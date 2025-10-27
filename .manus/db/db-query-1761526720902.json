@@ -1,0 +1,25 @@
+{
+  "query": "SELECT COUNT(*) as total_agendamentos FROM agendamentos; SELECT COUNT(*) as total_pagamentos FROM pagamentos; SELECT COUNT(*) as total_diaristas FROM diaristas;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 27JhVsvhRVViDor.root --database KWmw8qonEqZE2SBpspQBoN --execute SELECT COUNT(*) as total_agendamentos FROM agendamentos; SELECT COUNT(*) as total_pagamentos FROM pagamentos; SELECT COUNT(*) as total_diaristas FROM diaristas;",
+  "rows": [
+    {
+      "total_agendamentos": "0"
+    },
+    {
+      "total_agendamentos": "total_pagamentos"
+    },
+    {
+      "total_agendamentos": "0"
+    },
+    {
+      "total_agendamentos": "total_diaristas"
+    },
+    {
+      "total_agendamentos": "6"
+    }
+  ],
+  "messages": [],
+  "stdout": "total_agendamentos\n0\ntotal_pagamentos\n0\ntotal_diaristas\n6\n",
+  "stderr": "",
+  "execution_time_ms": 62
+}
