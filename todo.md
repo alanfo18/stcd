@@ -12,9 +12,11 @@
 - [x] Dropdowns resetando ao preencher inputs (extraído para componente separado)
 
 ## Tarefas Pendentes
+- [ ] Leitura de valores nos recibos (OCR ou manual)
+- [ ] Vincular recibo de pagamento ao agendamento
 - [ ] Substituir `<select>` nativo por componente robusto (Shadcn/ui Select)
 - [ ] Testar criação de novo agendamento com todos os campos preenchidos
-- [ ] Verificar se notificações WhatsApp estão sendo enviadas
+- [x] Verificar se notificações WhatsApp estão sendo enviadas
 - [ ] Testar edição de agendamentos
 - [ ] Testar cancelamento de agendamentos
 

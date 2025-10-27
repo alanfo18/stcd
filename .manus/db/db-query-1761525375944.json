@@ -1,0 +1,40 @@
+{
+  "query": "SELECT id, telefone, nome FROM diaristas ORDER BY id;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 27JhVsvhRVViDor.root --database KWmw8qonEqZE2SBpspQBoN --execute SELECT id, telefone, nome FROM diaristas ORDER BY id;",
+  "rows": [
+    {
+      "id": "30001",
+      "telefone": "67999820888",
+      "nome": "Alan Fernandes de Oliveira"
+    },
+    {
+      "id": "60001",
+      "telefone": "1199999999",
+      "nome": "Artur"
+    },
+    {
+      "id": "90001",
+      "telefone": "+55 67 99716-4316",
+      "nome": "Bárbara Reis de Oliveira "
+    },
+    {
+      "id": "90002",
+      "telefone": "67 99352-9390 ",
+      "nome": "Heitor hideki tsuru"
+    },
+    {
+      "id": "120001",
+      "telefone": "67981192326",
+      "nome": "jennifer dos santos"
+    },
+    {
+      "id": "150001",
+      "telefone": "67992710745",
+      "nome": "Cesar Saldanha Ostemberg "
+    }
+  ],
+  "messages": [],
+  "stdout": "id\ttelefone\tnome\n30001\t67999820888\tAlan Fernandes de Oliveira\n60001\t1199999999\tArtur\n90001\t+55 67 99716-4316\tBárbara Reis de Oliveira \n90002\t67 99352-9390 \tHeitor hideki tsuru\n120001\t67981192326\tjennifer dos santos\n150001\t67992710745\tCesar Saldanha Ostemberg \n",
+  "stderr": "",
+  "execution_time_ms": 53
+}

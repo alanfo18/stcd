@@ -8,6 +8,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
+import { OcrValueExtractor } from "@/components/OcrValueExtractor";
 
 export default function Pagamentos() {
   const [, setLocation] = useLocation();
@@ -25,6 +26,7 @@ export default function Pagamentos() {
 
   const { data: pagamentos = [], isLoading, refetch } = trpc.pagamento.list.useQuery();
   const { data: diaristas = [] } = trpc.diarista.list.useQuery();
+  const { data: agendamentos = [] } = trpc.agendamento.list.useQuery();
   const createMutation = trpc.pagamento.create.useMutation();
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -142,6 +144,25 @@ export default function Pagamentos() {
                 </div>
 
                 <div>
+                  <Label htmlFor="agendamento">Agendamento (Opcional)</Label>
+                  <Select value={formData.agendamentoId} onValueChange={(value) => setFormData({ ...formData, agendamentoId: value })}>
+                    <SelectTrigger>
+                      <SelectValue placeholder="Selecione um agendamento" />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {agendamentos
+                        .filter(a => formData.diaristaId === "" || a.diaristaId === parseInt(formData.diaristaId))
+                        .map((a) => (
+                          <SelectItem key={a.id} value={a.id.toString()}>
+                            {a.enderecoServico} - {new Date(a.dataInicio).toLocaleDateString('pt-BR')}
+                          </SelectItem>
+                        ))}
+                    </SelectContent>
+                  </Select>
+                  <p className="text-xs text-gray-500 mt-1">Vincule o pagamento a um agendamento especifico</p>
+                </div>
+
+                <div>
                   <Label htmlFor="valor">Valor (R$) *</Label>
                   <Input
                     id="valor"
@@ -151,6 +172,14 @@ export default function Pagamentos() {
                     onChange={(e) => setFormData({ ...formData, valor: e.target.value })}
                     placeholder="0.00"
                     required
+                  />
+                  <p className="text-xs text-gray-500 mt-1">💡 Dica: Use o campo de comprovante abaixo para extrair o valor automaticamente</p>
+                </div>
+
+                <div>
+                  <OcrValueExtractor
+                    onValueExtracted={(value) => setFormData({ ...formData, valor: value.toString() })}
+                    disabled={isOpen === false}
                   />
                 </div>
 

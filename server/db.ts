@@ -323,15 +323,17 @@ export async function removeEspecialidadeFromDiarista(diaristaId: number, especi
 
 // ========== AGENDAMENTO OPERATIONS ==========
 
-export async function createAgendamento(agendamento: InsertAgendamento): Promise<void> {
+export async function createAgendamento(agendamento: InsertAgendamento): Promise<any> {
   const db = await getDb();
   if (!db) {
     console.warn("[Database] Cannot create agendamento: database not available");
-    return;
+    return null;
   }
 
   try {
     await db.insert(agendamentos).values(agendamento);
+    // Retornar o agendamento inserido
+    return agendamento;
   } catch (error) {
     console.error("[Database] Error creating agendamento:", error);
     throw error;

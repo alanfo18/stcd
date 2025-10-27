@@ -1,0 +1,8 @@
+{
+  "query": "INSERT INTO agendamentos (userId, diaristaId, especialidadeId, enderecoServico, dataInicio, dataFim, descricaoServico, status, valorDiaria, valorServico, observacoes) VALUES (1, 30001, 1, 'Havalon', '2026-03-01', '2026-03-03', '', 'pendente', 85000, 255000, '');",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 27JhVsvhRVViDor.root --database KWmw8qonEqZE2SBpspQBoN --execute INSERT INTO agendamentos (userId, diaristaId, especialidadeId, enderecoServico, dataInicio, dataFim, descricaoServico, status, valorDiaria, valorServico, observacoes) VALUES (1, 30001, 1, 'Havalon', '2026-03-01', '2026-03-03', '', 'pendente', 85000, 255000, '');",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1265 (01000) at line 1: Data truncated for column 'status' at row 1"
+  ]
+}

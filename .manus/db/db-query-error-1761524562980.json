@@ -1,0 +1,8 @@
+{
+  "query": "INSERT INTO agendamentos (userId, diaristaId, especialidadeId, enderecoServico, dataInicio, dataFim, descricaoServico, valorDiaria, valorServico, observacoes) VALUES (1, 30001, 1, 'Havalon', '2026-03-01', '2026-03-03', '', 85000, 255000, '');",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 27JhVsvhRVViDor.root --database KWmw8qonEqZE2SBpspQBoN --execute INSERT INTO agendamentos (userId, diaristaId, especialidadeId, enderecoServico, dataInicio, dataFim, descricaoServico, valorDiaria, valorServico, observacoes) VALUES (1, 30001, 1, 'Havalon', '2026-03-01', '2026-03-03', '', 85000, 255000, '');",
+  "returncode": 1,
+  "logs": [
+    "ERROR 1364 (HY000) at line 1: Field 'dataServico' doesn't have a default value"
+  ]
+}

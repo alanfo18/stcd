@@ -16,7 +16,14 @@ export async function sendWhatsAppMessage(message: WhatsAppMessage): Promise<boo
       return false;
     }
 
-    const url = `${ENV.ultramsgApiUrl}messages/chat`;
+    // Construir URL corretamente
+    // A URL da UltraMsg deve ser: https://api.ultramsg.com/instance{instanceId}/messages/chat
+    const baseUrl = ENV.ultramsgApiUrl.endsWith('/') ? ENV.ultramsgApiUrl : ENV.ultramsgApiUrl + '/';
+    const url = `${baseUrl}messages/chat`;
+    
+    console.log('[WhatsApp] URL:', url);
+    console.log('[WhatsApp] Instance ID:', ENV.ultramsgInstanceId);
+    console.log('[WhatsApp] Enviando mensagem para:', message.to);
     
     const response = await fetch(url, {
       method: 'POST',
@@ -32,7 +39,8 @@ export async function sendWhatsAppMessage(message: WhatsAppMessage): Promise<boo
     });
 
     if (!response.ok) {
-      console.error('[WhatsApp] Erro ao enviar mensagem:', response.statusText);
+      const errorText = await response.text();
+      console.error('[WhatsApp] Erro ao enviar mensagem:', response.status, response.statusText, errorText);
       return false;
     }
 

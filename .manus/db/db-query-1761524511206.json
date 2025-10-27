@@ -1,0 +1,30 @@
+{
+  "query": "SELECT id, email FROM users LIMIT 5;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 27JhVsvhRVViDor.root --database KWmw8qonEqZE2SBpspQBoN --execute SELECT id, email FROM users LIMIT 5;",
+  "rows": [
+    {
+      "id": "1",
+      "email": "alan@067vinhos.com"
+    },
+    {
+      "id": "90007",
+      "email": "barbara@067vinhos.com"
+    },
+    {
+      "id": "510001",
+      "email": "jennifer.peixinho@067vinhos.com"
+    },
+    {
+      "id": "630054",
+      "email": "heitortsuru@gmail.com"
+    },
+    {
+      "id": "690001",
+      "email": "jhennypei@gmail.com"
+    }
+  ],
+  "messages": [],
+  "stdout": "id\temail\n1\talan@067vinhos.com\n90007\tbarbara@067vinhos.com\n510001\tjennifer.peixinho@067vinhos.com\n630054\theitortsuru@gmail.com\n690001\tjhennypei@gmail.com\n",
+  "stderr": "",
+  "execution_time_ms": 45
+}

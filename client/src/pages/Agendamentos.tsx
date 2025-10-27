@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
@@ -75,15 +75,20 @@ export default function Agendamentos() {
                   {editingId ? "Atualize os dados do agendamento." : "Preencha os dados do agendamento para criar um novo serviço."}
                 </DialogDescription>
               </DialogHeader>
-              <AgendamentoForm
-                editingId={editingId}
-                onSuccess={() => {
-                  setEditingId(null);
-                  setIsOpen(false);
-                  refetch();
-                }}
-                onCancel={() => setIsOpen(false)}
-              />
+              {isOpen && (
+                <AgendamentoForm
+                  key={`${editingId}-${isOpen}`}
+                  editingId={editingId}
+                  onSuccess={() => {
+                    setEditingId(null);
+                    setIsOpen(false);
+                    refetch();
+                  }}
+                  onCancel={() => setIsOpen(false)}
+                  diaristas={diaristas}
+                  especialidades={especialidades}
+                />
+              )}
             </DialogContent>
           </Dialog>
         </div>

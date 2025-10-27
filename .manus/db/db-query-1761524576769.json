@@ -1,0 +1,9 @@
+{
+  "query": "ALTER TABLE agendamentos DROP COLUMN dataServico;",
+  "command": "mysql --batch --raw --column-names --default-character-set=utf8mb4 --host gateway02.us-east-1.prod.aws.tidbcloud.com --port 4000 --user 27JhVsvhRVViDor.root --database KWmw8qonEqZE2SBpspQBoN --execute ALTER TABLE agendamentos DROP COLUMN dataServico;",
+  "rows": [],
+  "messages": [],
+  "stdout": "",
+  "stderr": "",
+  "execution_time_ms": 399
+}
