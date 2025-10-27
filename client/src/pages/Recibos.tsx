@@ -154,10 +154,96 @@ Data: ${new Date().toLocaleDateString("pt-BR")}
           padding-top: 30px;
           border-top: 1px solid #000;
         }
+        /* Responsivo para tablets */
+        @media (max-width: 768px) {
+          body {
+            margin: 10px;
+          }
+          .recibo {
+            max-width: 100%;
+            padding: 15px;
+            border: 1px solid #000;
+          }
+          .header h1 {
+            font-size: 18px;
+          }
+          .header p {
+            font-size: 10px;
+          }
+          .section h3 {
+            font-size: 12px;
+          }
+          .field {
+            font-size: 10px;
+            flex-wrap: wrap;
+          }
+          .footer {
+            font-size: 9px;
+          }
+          .signature {
+            margin-top: 20px;
+            flex-direction: column;
+            gap: 15px;
+          }
+          .signature-line {
+            font-size: 10px;
+          }
+        }
+        /* Responsivo para celulares */
+        @media (max-width: 480px) {
+          body {
+            margin: 5px;
+          }
+          .recibo {
+            max-width: 100%;
+            padding: 10px;
+            border: 1px solid #000;
+          }
+          .header h1 {
+            font-size: 14px;
+          }
+          .header p {
+            font-size: 8px;
+          }
+          .section {
+            margin-bottom: 10px;
+          }
+          .section h3 {
+            font-size: 10px;
+            margin: 8px 0 3px 0;
+          }
+          .field {
+            font-size: 8px;
+            margin: 3px 0;
+            flex-wrap: wrap;
+          }
+          .label {
+            min-width: 80px;
+          }
+          .footer {
+            margin-top: 15px;
+            font-size: 7px;
+          }
+          .signature {
+            margin-top: 15px;
+            flex-direction: column;
+            gap: 10px;
+          }
+          .signature-line {
+            font-size: 8px;
+          }
+          .signature-line p {
+            padding-top: 15px;
+          }
+        }
         @media print {
           body {
             margin: 0;
             padding: 0;
+          }
+          .recibo {
+            max-width: 100%;
+            border: none;
           }
         }
       </style>
