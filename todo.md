@@ -18,12 +18,18 @@
 - [x] Componente OcrValueExtractor implementado
 - [x] Testes bem-sucedidos com registro de pagamento
 
-## Tarefas Pendentes
+## Tarefas Pendentes - Relatórios
+- [ ] Atualizar recibos com dados completos do diarista (CPF, endereço, etc)
+- [ ] Implementar relatório por diarista
+- [ ] Implementar relatório por data
+- [ ] Implementar relatório por operação
+- [ ] Testar relatórios com dados reais
+
+## Tarefas Pendentes - Melhorias Gerais
 - [ ] Substituir `<select>` nativo por componente robusto (Shadcn/ui Select)
 - [ ] Testar edição de agendamentos
 - [ ] Testar cancelamento de agendamentos
 - [ ] Testar OCR com imagem real de comprovante
-- [ ] Gerar relatórios de pagamentos
 
 ## Status Atual
 - ✅ Banco de dados: Conectando com sucesso

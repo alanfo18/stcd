@@ -41,7 +41,11 @@ export default function Recibos() {
 DADOS DO RECEBEDOR:
 Nome: ${diarista?.nome || "—"}
 Telefone: ${diarista?.telefone || "—"}
-CPF/CNPJ: ___________________________
+Email: ${diarista?.email || "—"}
+CPF/CNPJ: ${diarista?.cpf || "___________________________"}
+Endereço: ${diarista?.endereco || "—"}
+Cidade: ${diarista?.cidade || "—"} - ${diarista?.estado || "—"}
+CEP: ${diarista?.cep || "—"}
 
 DADOS DO SERVIÇO:
 Descrição: ${agendamento?.descricaoServico || "Serviço de Limpeza"}
@@ -178,8 +182,24 @@ Data: ${new Date().toLocaleDateString("pt-BR")}
             <span>${diarista?.telefone || "—"}</span>
           </div>
           <div class="field">
+            <span class="label">Email:</span>
+            <span>${diarista?.email || "—"}</span>
+          </div>
+          <div class="field">
             <span class="label">CPF/CNPJ:</span>
-            <span>_________________________</span>
+            <span>${diarista?.cpf || "_________________________"}</span>
+          </div>
+          <div class="field">
+            <span class="label">Endereço:</span>
+            <span>${diarista?.endereco || "—"}</span>
+          </div>
+          <div class="field">
+            <span class="label">Cidade/Estado:</span>
+            <span>${diarista?.cidade || "—"} - ${diarista?.estado || "—"}</span>
+          </div>
+          <div class="field">
+            <span class="label">CEP:</span>
+            <span>${diarista?.cep || "—"}</span>
           </div>
         </div>
 
@@ -362,7 +382,11 @@ Data: ${new Date().toLocaleDateString("pt-BR")}
 DADOS DO RECEBEDOR:
 Nome: ${diarista?.nome || "—"}
 Telefone: ${diarista?.telefone || "—"}
-CPF/CNPJ: ___________________________
+Email: ${diarista?.email || "—"}
+CPF/CNPJ: ${diarista?.cpf || "___________________________"}
+Endereço: ${diarista?.endereco || "—"}
+Cidade: ${diarista?.cidade || "—"} - ${diarista?.estado || "—"}
+CEP: ${diarista?.cep || "—"}
 
 DADOS DO SERVIÇO:
 Descrição: ${agendamento?.descricaoServico || "Serviço de Limpeza"}
