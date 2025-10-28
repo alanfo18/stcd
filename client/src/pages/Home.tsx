@@ -4,10 +4,20 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { APP_LOGO, APP_TITLE, getLoginUrl } from "@/const";
 import { useLocation } from "wouter";
 import { NotificationsWidget } from "@/components/NotificationsWidget";
+import { useEffect, useState } from "react";
 
 export default function Home() {
   const { user, isAuthenticated } = useAuth();
   const [, setLocation] = useLocation();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (user?.role === 'admin') {
+      setIsAdmin(true);
+    } else {
+      setIsAdmin(false);
+    }
+  }, [user?.role]);
 
   if (!isAuthenticated) {
     return (
@@ -107,7 +117,7 @@ export default function Home() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 mb-8">
-          {user?.role === 'admin' && (
+          {isAdmin && (
             <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setLocation("/usuarios")}>
               <CardHeader className="pb-3">
                 <CardTitle className="text-lg">👥 Usuários</CardTitle>
