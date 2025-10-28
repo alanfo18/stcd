@@ -609,3 +609,61 @@ export async function getAgendamentosWithEspecialidadeAll(): Promise<any[]> {
   }
 }
 
+
+
+
+/**
+ * Funções de Gerenciamento de Usuários
+ */
+
+// Listar todos os usuários
+export async function getAllUsers() {
+  try {
+    const db = await getDb();
+    if (!db) return [];
+    
+    const allUsers = await db.select().from(users);
+    return allUsers;
+  } catch (error) {
+    console.error("[Database] Error getting all users:", error);
+    return [];
+  }
+}
+
+// Atualizar role de um usuário
+export async function updateUserRole(userId: number, newRole: "user" | "admin") {
+  try {
+    const db = await getDb();
+    if (!db) return null;
+    
+    const updated = await db
+      .update(users)
+      .set({ role: newRole })
+      .where(eq(users.id, userId));
+    
+    return updated;
+  } catch (error) {
+    console.error("[Database] Error updating user role:", error);
+    return null;
+  }
+}
+
+// Obter usuário por ID
+export async function getUserById(userId: number) {
+  try {
+    const db = await getDb();
+    if (!db) return null;
+    
+    const user = await db
+      .select()
+      .from(users)
+      .where(eq(users.id, userId))
+      .limit(1);
+    
+    return user[0] || null;
+  } catch (error) {
+    console.error("[Database] Error getting user by ID:", error);
+    return null;
+  }
+}
+

@@ -11,6 +11,7 @@ import Agendamentos from "./pages/Agendamentos";
 import Pagamentos from "./pages/Pagamentos";
 import Relatorios from "./pages/Relatorios";
 import Recibos from "./pages/Recibos";
+import Usuarios from "./pages/Usuarios";
 
 function Router() {
   // make sure to consider if you need authentication for certain routes
@@ -23,6 +24,7 @@ function Router() {
       <Route path="/pagamentos" component={Pagamentos} />
       <Route path="/relatorios" component={Relatorios} />
       <Route path="/recibos" component={Recibos} />
+      <Route path="/usuarios" component={Usuarios} />
       <Route path="/404" component={NotFound} />
       {/* Final fallback route */}
       <Route component={NotFound} />

@@ -102,6 +102,18 @@ export default function Home() {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 mb-8">
+          {user?.role === 'admin' && (
+            <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setLocation("/usuarios")}>
+              <CardHeader className="pb-3">
+                <CardTitle className="text-lg">👥 Usuários</CardTitle>
+              </CardHeader>
+              <CardContent>
+                <p className="text-2xl font-bold" style={{color: '#471324'}}>Gerenciar</p>
+                <p className="text-sm text-gray-600 mt-1">Permissões e roles</p>
+              </CardContent>
+            </Card>
+          )}
+
           <Card className="cursor-pointer hover:shadow-lg transition-shadow" onClick={() => setLocation("/dashboard")}>
             <CardHeader className="pb-3">
               <CardTitle className="text-lg">📊 Dashboard</CardTitle>

@@ -33,6 +33,9 @@ import {
   getAgendamentosForDiarista,
   getAgendamentosWithEspecialidade,
   getAgendamentosWithEspecialidadeAll,
+  getAllUsers,
+  updateUserRole,
+  getUserById,
 } from "./db";
 
 export const appRouter = router({
@@ -365,7 +368,32 @@ export const appRouter = router({
         return updateAvaliacao(id, data);
       }),
   }),
+
+  // ========== USER MANAGEMENT ROUTERS ==========
+  user: router({
+    listAll: protectedProcedure
+      .query(async ({ ctx }) => {
+        if (ctx.user.role !== 'admin') {
+          throw new Error('Unauthorized: Only admins can list all users');
+        }
+        return getAllUsers();
+      }),
+    
+    updateRole: protectedProcedure
+      .input(z.object({
+        userId: z.number(),
+        role: z.enum(['user', 'admin']),
+      }))
+      .mutation(async ({ ctx, input }) => {
+        if (ctx.user.role !== 'admin') {
+          throw new Error('Unauthorized: Only admins can update user roles');
+        }
+        return updateUserRole(input.userId, input.role);
+      }),
+  }),
 });
 
 export type AppRouter = typeof appRouter;
 
+
+// Nota: O router de user management foi adicionado acima, antes do fechamento do appRouter
