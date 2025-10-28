@@ -40,6 +40,8 @@ export default function Agendamentos() {
     return new Intl.NumberFormat("pt-BR", {
       style: "currency",
       currency: "BRL",
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2,
     }).format(value);
   };
 
@@ -118,6 +120,17 @@ export default function Agendamentos() {
                     <div className="text-right">
                       <p className="text-sm text-gray-600">Local:</p>
                       <p className="font-semibold">{agendamento.enderecoServico}</p>
+                      <div className="mt-2">
+                        <span className={`px-2 py-1 rounded text-xs font-semibold ${
+                          agendamento.status === 'agendado' ? 'bg-blue-100 text-blue-800' :
+                          agendamento.status === 'concluido' ? 'bg-green-100 text-green-800' :
+                          'bg-red-100 text-red-800'
+                        }`}>
+                          {agendamento.status === 'agendado' ? '📅 Agendado' :
+                           agendamento.status === 'concluido' ? '✅ Concluído' :
+                           '❌ Cancelado'}
+                        </span>
+                      </div>
                     </div>
                   </div>
                 </CardHeader>

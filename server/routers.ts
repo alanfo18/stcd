@@ -205,6 +205,10 @@ export const appRouter = router({
 
     list: protectedProcedure
       .query(async ({ ctx }) => {
+        // Admins veem todos os agendamentos, usuários normais veem apenas os seus
+        if (ctx.user.role === 'admin') {
+          return getAgendamentosWithEspecialidadeAll();
+        }
         return getAgendamentosWithEspecialidade(ctx.user.id);
       }),
 
