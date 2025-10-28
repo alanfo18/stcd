@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
+import { notificacoes } from "@/lib/notificationHelper";
 
 const ENDERECOS = [
   "Havalon",
@@ -36,7 +37,15 @@ export function AgendamentoForm({ editingId, onSuccess, onCancel, diaristas, esp
   const [errors, setErrors] = useState<Record<string, string>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
 
-  const createMutation = trpc.agendamento.create.useMutation();
+  const createMutation = trpc.agendamento.create.useMutation({
+    onSuccess: () => {
+      const diarista = diaristas.find(d => d.id === parseInt(diaristaRef.current?.value || '0'));
+      const endereco = enderecoRef.current?.value;
+      if (diarista && endereco) {
+        notificacoes.novoAgendamento(diarista.nome, endereco);
+      }
+    },
+  });
   const updateMutation = trpc.agendamento.update.useMutation();
 
   // Validar formulário

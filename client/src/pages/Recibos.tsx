@@ -4,6 +4,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
+import { notificacoes } from "@/lib/notificationHelper";
 
 export default function Recibos() {
   const [, setLocation] = useLocation();
@@ -28,6 +29,10 @@ export default function Recibos() {
   const gerarRecibo = (pagamento: any) => {
     const agendamento = agendamentos.find((a) => a.id === pagamento.agendamentoId);
     const diarista = diaristas.find((d) => d.id === agendamento?.diaristaId);
+    
+    if (diarista) {
+      notificacoes.novoRecibo(diarista.nome);
+    }
 
     const recibo = `
 ╔════════════════════════════════════════════════════════════════╗

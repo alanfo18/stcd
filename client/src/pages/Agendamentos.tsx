@@ -5,6 +5,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
 import { AgendamentoForm } from "./AgendamentoForm";
+import { notificacoes } from "@/lib/notificationHelper";
 
 export default function Agendamentos() {
   const [, setLocation] = useLocation();

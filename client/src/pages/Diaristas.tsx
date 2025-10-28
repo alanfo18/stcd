@@ -7,6 +7,7 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, Di
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
+import { notificacoes } from "@/lib/notificationHelper";
 
 export default function Diaristas() {
   const [, setLocation] = useLocation();
@@ -25,10 +26,16 @@ export default function Diaristas() {
   const { data: diaristas = [], isLoading, refetch } = trpc.diarista.list.useQuery();
   const { data: especialidades = [] } = trpc.especialidade.list.useQuery();
   const createMutation = trpc.diarista.create.useMutation({
-    onSuccess: () => refetch(),
+    onSuccess: () => {
+      notificacoes.novaDiarista(formData.nome);
+      setFormData({ nome: "", telefone: "", email: "", endereco: "", cidade: "", cep: "" });
+      refetch();
+    },
   });
   const updateMutation = trpc.diarista.update.useMutation({
-    onSuccess: () => refetch(),
+    onSuccess: (data) => {
+      refetch();
+    },
   });
   const deleteMutation = trpc.diarista.delete.useMutation({
     onSuccess: () => refetch(),

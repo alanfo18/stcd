@@ -9,6 +9,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { trpc } from "@/lib/trpc";
 import { useLocation } from "wouter";
 import { OcrValueExtractor } from "@/components/OcrValueExtractor";
+import { notificacoes } from "@/lib/notificationHelper";
 
 export default function Pagamentos() {
   const [, setLocation] = useLocation();
@@ -27,7 +28,15 @@ export default function Pagamentos() {
   const { data: pagamentos = [], isLoading, refetch } = trpc.pagamento.list.useQuery();
   const { data: diaristas = [] } = trpc.diarista.list.useQuery();
   const { data: agendamentos = [] } = trpc.agendamento.list.useQuery();
-  const createMutation = trpc.pagamento.create.useMutation();
+  const createMutation = trpc.pagamento.create.useMutation({
+    onSuccess: () => {
+      const diarista = diaristas.find(d => d.id === parseInt(formData.diaristaId));
+      if (diarista) {
+        notificacoes.novoPagamento(diarista.nome, `R$ ${parseFloat(formData.valor).toFixed(2)}`);
+      }
+      refetch();
+    },
+  });
 
   const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (e.target.files) {
