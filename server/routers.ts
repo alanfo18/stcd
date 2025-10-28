@@ -36,6 +36,11 @@ import {
   getAllUsers,
   updateUserRole,
   getUserById,
+  obterNotificacoes,
+  obterNotificacoesNaoLidas,
+  marcarNotificacaoComoLida,
+  marcarTodasNotificacoesComoLidas,
+  deletarNotificacao,
 } from "./db";
 
 export const appRouter = router({
@@ -389,6 +394,39 @@ export const appRouter = router({
           throw new Error('Unauthorized: Only admins can update user roles');
         }
         return updateUserRole(input.userId, input.role);
+      }),
+  }),
+  
+  // ============================================
+  // NOTIFICAÇÕES
+  // ============================================
+  notificacao: router({
+    list: protectedProcedure
+      .input(z.object({ limite: z.number().default(10) }))
+      .query(async ({ input, ctx }) => {
+        return obterNotificacoes(ctx.user.id, input.limite);
+      }),
+    
+    naoLidas: protectedProcedure
+      .query(async ({ ctx }) => {
+        return obterNotificacoesNaoLidas(ctx.user.id);
+      }),
+    
+    marcarComoLida: protectedProcedure
+      .input(z.object({ notificacaoId: z.number() }))
+      .mutation(async ({ input }) => {
+        return marcarNotificacaoComoLida(input.notificacaoId);
+      }),
+    
+    marcarTodasComoLidas: protectedProcedure
+      .mutation(async ({ ctx }) => {
+        return marcarTodasNotificacoesComoLidas(ctx.user.id);
+      }),
+    
+    deletar: protectedProcedure
+      .input(z.object({ notificacaoId: z.number() }))
+      .mutation(async ({ input }) => {
+        return deletarNotificacao(input.notificacaoId);
       }),
   }),
 });

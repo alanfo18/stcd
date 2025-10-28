@@ -205,3 +205,56 @@ export const notificacoesWhatsapp = mysqlTable("notificacoes_whatsapp", {
 export type NotificacaoWhatsapp = typeof notificacoesWhatsapp.$inferSelect;
 export type InsertNotificacaoWhatsapp = typeof notificacoesWhatsapp.$inferInsert;
 
+
+
+
+/**
+ * Tabela de Logs de Auditoria
+ * Registra todas as ações realizadas no sistema para auditoria e segurança
+ */
+export const logs = mysqlTable("logs", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(), // Usuário que realizou a ação
+  userName: varchar("userName", { length: 255 }).notNull(), // Nome do usuário
+  userEmail: varchar("userEmail", { length: 320 }).notNull(), // Email do usuário
+  acao: varchar("acao", { length: 100 }).notNull(), // Tipo de ação (criar, editar, deletar, etc)
+  tabela: varchar("tabela", { length: 100 }).notNull(), // Tabela afetada (diaristas, agendamentos, etc)
+  registroId: int("registroId"), // ID do registro afetado
+  descricao: text("descricao"), // Descrição detalhada da ação
+  dadosAntigos: text("dadosAntigos"), // Dados antes da alteração (JSON)
+  dadosNovos: text("dadosNovos"), // Dados após a alteração (JSON)
+  ipAddress: varchar("ipAddress", { length: 45 }), // IP do cliente
+  userAgent: text("userAgent"), // User agent do navegador
+  status: mysqlEnum("status", ["sucesso", "erro"]).default("sucesso").notNull(),
+  mensagemErro: text("mensagemErro"), // Mensagem de erro se houver
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type Log = typeof logs.$inferSelect;
+export type InsertLog = typeof logs.$inferInsert;
+
+
+
+
+/**
+ * Tabela de Notificações
+ * Armazena notificações personalizadas para o admin
+ */
+export const notificacoes = mysqlTable("notificacoes", {
+  id: int("id").autoincrement().primaryKey(),
+  userId: int("userId").notNull(), // Admin que recebe a notificação
+  tipo: mysqlEnum("tipo", ["diarista_cadastrada", "agendamento_criado", "pagamento_registrado", "recibo_emitido", "acesso_suspeito"]).notNull(),
+  titulo: varchar("titulo", { length: 255 }).notNull(),
+  descricao: text("descricao"),
+  icone: varchar("icone", { length: 50 }), // Emoji ou ícone
+  cor: varchar("cor", { length: 20 }), // Cor do alerta
+  lido: boolean("lido").default(false).notNull(),
+  whatsappEnviado: boolean("whatsappEnviado").default(false).notNull(),
+  registroId: int("registroId"), // ID do registro relacionado
+  tabelaRelacionada: varchar("tabelaRelacionada", { length: 100 }), // Tabela do registro
+  createdAt: timestamp("createdAt").defaultNow().notNull(),
+});
+
+export type Notificacao = typeof notificacoes.$inferSelect;
+export type InsertNotificacao = typeof notificacoes.$inferInsert;
+

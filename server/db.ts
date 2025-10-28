@@ -15,6 +15,8 @@ import {
   InsertPagamento,
   avaliacoes,
   InsertAvaliacao,
+  notificacoes,
+  InsertNotificacao,
 } from "../drizzle/schema";
 import { ENV } from './_core/env';
 import { eq, and, desc } from "drizzle-orm";
@@ -664,6 +666,134 @@ export async function getUserById(userId: number) {
   } catch (error) {
     console.error("[Database] Error getting user by ID:", error);
     return null;
+  }
+}
+
+
+
+// ============================================
+// FUNÇÕES DE NOTIFICAÇÕES
+// ============================================
+
+export async function criarNotificacao(
+  userId: number,
+  tipo: "diarista_cadastrada" | "agendamento_criado" | "pagamento_registrado" | "recibo_emitido" | "acesso_suspeito",
+  titulo: string,
+  descricao?: string,
+  registroId?: number,
+  tabelaRelacionada?: string
+) {
+  const db = await getDb();
+  if (!db) {
+    console.warn("[Database] Cannot create notification: database not available");
+    return null;
+  }
+
+  const iconMap: Record<string, string> = {
+    diarista_cadastrada: "👥",
+    agendamento_criado: "📅",
+    pagamento_registrado: "💳",
+    recibo_emitido: "📋",
+    acesso_suspeito: "⚠️",
+  };
+
+  const corMap: Record<string, string> = {
+    diarista_cadastrada: "blue",
+    agendamento_criado: "yellow",
+    pagamento_registrado: "green",
+    recibo_emitido: "purple",
+    acesso_suspeito: "red",
+  };
+
+  return await db.insert(notificacoes).values({
+    userId,
+    tipo,
+    titulo,
+    descricao,
+    icone: iconMap[tipo],
+    cor: corMap[tipo],
+    registroId,
+    tabelaRelacionada,
+  });
+}
+
+export async function obterNotificacoes(userId: number, limite: number = 10) {
+  const db = await getDb();
+  if (!db) return [];
+  return await db
+    .select()
+    .from(notificacoes)
+    .where(eq(notificacoes.userId, userId))
+    .orderBy(desc(notificacoes.createdAt))
+    .limit(limite);
+}
+
+export async function obterNotificacoesNaoLidas(userId: number) {
+  const db = await getDb();
+  if (!db) return [];
+  return await db
+    .select()
+    .from(notificacoes)
+    .where(and(eq(notificacoes.userId, userId), eq(notificacoes.lido, false)))
+    .orderBy(desc(notificacoes.createdAt));
+}
+
+export async function marcarNotificacaoComoLida(notificacaoId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  return await db
+    .update(notificacoes)
+    .set({ lido: true })
+    .where(eq(notificacoes.id, notificacaoId));
+}
+
+export async function marcarTodasNotificacoesComoLidas(userId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  return await db
+    .update(notificacoes)
+    .set({ lido: true })
+    .where(eq(notificacoes.userId, userId));
+}
+
+export async function deletarNotificacao(notificacaoId: number) {
+  const db = await getDb();
+  if (!db) return null;
+  return await db
+    .delete(notificacoes)
+    .where(eq(notificacoes.id, notificacaoId));
+}
+
+export async function enviarNotificacaoWhatsApp(
+  telefone: string,
+  mensagem: string
+) {
+  try {
+    const apiUrl = process.env.ULTRAMSG_API_URL;
+    const token = process.env.ULTRAMSG_API_TOKEN;
+    const instanceId = process.env.ULTRAMSG_INSTANCE_ID;
+
+    if (!apiUrl || !token || !instanceId) {
+      console.error("WhatsApp API não configurada");
+      return false;
+    }
+
+    const response = await fetch(`${apiUrl}/instance${instanceId}/messages/chat`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({
+        token,
+        to: telefone,
+        body: mensagem,
+      }),
+    });
+
+    return response.ok;
+  } catch (error) {
+    console.error("Erro ao enviar WhatsApp:", error);
+    return false;
   }
 }
 

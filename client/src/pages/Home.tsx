@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { APP_LOGO, APP_TITLE, getLoginUrl } from "@/const";
 import { useLocation } from "wouter";
+import { NotificationsWidget } from "@/components/NotificationsWidget";
 
 export default function Home() {
   const { user, isAuthenticated } = useAuth();
@@ -93,12 +94,16 @@ export default function Home() {
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="max-w-7xl mx-auto p-4">
-        <div className="mb-8 flex items-center gap-4">
-          <img src="/logo-067vinhos.png" alt="067 Vinhos" className="h-16" />
-          <div>
-            <h1 className="text-3xl font-bold text-gray-900">Bem-vindo, {user?.name}!</h1>
-            <p className="text-gray-600 mt-2">Sistema de Controle de Diaristas</p>
+        {/* HEADER COM NOTIFICAÇÕES */}
+        <div className="mb-8 flex items-center justify-between">
+          <div className="flex items-center gap-4">
+            <img src="/logo-067vinhos.png" alt="067 Vinhos" className="h-16" />
+            <div>
+              <h1 className="text-3xl font-bold text-gray-900">Bem-vindo, {user?.name}!</h1>
+              <p className="text-gray-600 mt-2">Sistema de Controle de Diaristas</p>
+            </div>
           </div>
+          <NotificationsWidget />
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-6 gap-4 mb-8">
