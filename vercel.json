@@ -1,12 +1,12 @@
 {
-  "buildCommand": "pnpm build",
+  "buildCommand": "pnpm build && rm -f dist/index.js",
   "outputDirectory": "dist",
   "installCommand": "pnpm install --frozen-lockfile",
   "env": {
     "NODE_ENV": "production"
   },
   "functions": {
-    "api/**/*.ts": {
+    "api/**/*.js": {
       "runtime": "nodejs20.x",
       "maxDuration": 60
     }
