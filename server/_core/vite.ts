@@ -5,6 +5,7 @@ import { nanoid } from "nanoid";
 import path from "path";
 import { createServer as createViteServer } from "vite";
 import viteConfig from "../../vite.config";
+import { ENV } from "./env";
 
 export async function setupVite(app: Express, server: Server) {
   const serverOptions = {
@@ -65,6 +66,39 @@ export function serveStatic(app: Express) {
   }
 
   app.use(express.static(distPath));
+
+  // Middleware to inject config into HTML
+  app.use("*", (req, res, next) => {
+    const originalSendFile = res.sendFile.bind(res);
+    res.sendFile = function(filepath: string, options?: any, callback?: any) {
+      if (filepath.endsWith("index.html")) {
+        // Read and modify the HTML
+        fs.readFile(filepath, "utf-8", (err, data) => {
+          if (err) {
+            return originalSendFile(filepath, options, callback);
+          }
+          
+          // Create config object with environment variables
+          const config = {
+            VITE_APP_ID: process.env.VITE_APP_ID || "proj_stcd_067vinhos",
+            VITE_OAUTH_PORTAL_URL: process.env.VITE_OAUTH_PORTAL_URL || "https://api.manus.im",
+            VITE_APP_TITLE: process.env.VITE_APP_TITLE || "STCD - Sistema de Controle de Diaristas",
+            VITE_APP_LOGO: process.env.VITE_APP_LOGO || "https://067vinhos.com.br/logo-067vinhos.png",
+          };
+          
+          // Inject config script into HTML
+          const configScript = `<script>window.__config__ = ${JSON.stringify(config)};</script>`;
+          const modifiedHtml = data.replace("</head>", `${configScript}</head>`);
+          
+          res.set({ "Content-Type": "text/html" });
+          res.send(modifiedHtml);
+        });
+      } else {
+        return originalSendFile(filepath, options, callback);
+      }
+    };
+    next();
+  });
 
   // fall through to index.html if the file doesn't exist
   app.use("*", (_req, res) => {
