@@ -48,11 +48,20 @@ export async function setupVite(app: Express, server: Server) {
 }
 
 export function serveStatic(app: Express) {
-  const distPath = path.resolve(import.meta.dirname, "../..", "dist", "public");
+  // Tentar múltiplos caminhos possíveis
+  let distPath = path.resolve(import.meta.dirname, "../..", "dist", "public");
+  
+  // Se não encontrar, tentar a partir do diretório de trabalho
+  if (!fs.existsSync(distPath)) {
+    distPath = path.resolve(process.cwd(), "dist", "public");
+  }
+  
   if (!fs.existsSync(distPath)) {
     console.error(
       `Could not find the build directory: ${distPath}, make sure to build the client first`
     );
+  } else {
+    console.log(`Serving static files from: ${distPath}`);
   }
 
   app.use(express.static(distPath));
