@@ -65,43 +65,66 @@ export function serveStatic(app: Express) {
     console.log(`Serving static files from: ${distPath}`);
   }
 
-  app.use(express.static(distPath));
-
-  // Middleware to inject config into HTML
-  app.use("*", (req, res, next) => {
-    const originalSendFile = res.sendFile.bind(res);
-    res.sendFile = function(filepath: string, options?: any, callback?: any) {
-      if (filepath.endsWith("index.html")) {
-        // Read and modify the HTML
-        fs.readFile(filepath, "utf-8", (err, data) => {
-          if (err) {
-            return originalSendFile(filepath, options, callback);
-          }
-          
-          // Create config object with environment variables
-          const config = {
-            VITE_APP_ID: process.env.VITE_APP_ID || "proj_stcd_067vinhos",
-            VITE_OAUTH_PORTAL_URL: process.env.VITE_OAUTH_PORTAL_URL || "https://api.manus.im",
-            VITE_APP_TITLE: process.env.VITE_APP_TITLE || "STCD - Sistema de Controle de Diaristas",
-            VITE_APP_LOGO: process.env.VITE_APP_LOGO || "https://067vinhos.com.br/logo-067vinhos.png",
-          };
-          
-          // Inject config script into HTML
-          const configScript = `<script>window.__config__ = ${JSON.stringify(config)};</script>`;
-          const modifiedHtml = data.replace("</head>", `${configScript}</head>`);
-          
-          res.set({ "Content-Type": "text/html" });
-          res.send(modifiedHtml);
-        });
-      } else {
-        return originalSendFile(filepath, options, callback);
-      }
-    };
-    next();
+  // Middleware to inject config into HTML BEFORE serving static files
+  app.use((req, res, next) => {
+    // Only intercept HTML requests
+    if (req.path === "/" || req.path.endsWith(".html")) {
+      const indexPath = path.resolve(distPath, "index.html");
+      
+      fs.readFile(indexPath, "utf-8", (err, data) => {
+        if (err) {
+          return next();
+        }
+        
+        // Create config object with environment variables
+        const config = {
+          VITE_APP_ID: process.env.VITE_APP_ID || "proj_stcd_067vinhos",
+          VITE_OAUTH_PORTAL_URL: process.env.VITE_OAUTH_PORTAL_URL || "https://api.manus.im",
+          VITE_APP_TITLE: process.env.VITE_APP_TITLE || "STCD - Sistema de Controle de Diaristas",
+          VITE_APP_LOGO: process.env.VITE_APP_LOGO || "https://067vinhos.com.br/logo-067vinhos.png",
+        };
+        
+        // Inject config script into HTML
+        const configScript = `<script>window.__config__ = ${JSON.stringify(config)};</script>`;
+        const modifiedHtml = data.replace("</head>", `${configScript}</head>`);
+        
+        res.set({ "Content-Type": "text/html" });
+        res.send(modifiedHtml);
+      });
+    } else {
+      next();
+    }
   });
+
+  // Serve static files
+  app.use(express.static(distPath));
 
   // fall through to index.html if the file doesn't exist
   app.use("*", (_req, res) => {
-    res.sendFile(path.resolve(distPath, "index.html"));
+    const indexPath = path.resolve(distPath, "index.html");
+    
+    // Read and inject config into fallback index.html
+    fs.readFile(indexPath, "utf-8", (err, data) => {
+      if (err) {
+        res.status(404).send("Not found");
+        return;
+      }
+      
+      // Create config object with environment variables
+      const config = {
+        VITE_APP_ID: process.env.VITE_APP_ID || "proj_stcd_067vinhos",
+        VITE_OAUTH_PORTAL_URL: process.env.VITE_OAUTH_PORTAL_URL || "https://api.manus.im",
+        VITE_APP_TITLE: process.env.VITE_APP_TITLE || "STCD - Sistema de Controle de Diaristas",
+        VITE_APP_LOGO: process.env.VITE_APP_LOGO || "https://067vinhos.com.br/logo-067vinhos.png",
+      };
+      
+      // Inject config script into HTML
+      const configScript = `<script>window.__config__ = ${JSON.stringify(config)};</script>`;
+      const modifiedHtml = data.replace("</head>", `${configScript}</head>`);
+      
+      res.set({ "Content-Type": "text/html" });
+      res.send(modifiedHtml);
+    });
   });
 }
+
